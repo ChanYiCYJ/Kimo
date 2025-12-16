@@ -1,6 +1,7 @@
 import pymysql
 from dbutils.pooled_db import PooledDB
 from flask import render_template
+from pymysql import cursors
 POOL = PooledDB(
     creator=pymysql,
     maxconnections=10,
@@ -20,7 +21,7 @@ POOL = PooledDB(
 
 def fetch_one(sql,params):
     conn = POOL.connection()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor = cursors.DictCursor)
     cursor.execute(sql,params)
     result = cursor.fetchone()
     cursor.close()

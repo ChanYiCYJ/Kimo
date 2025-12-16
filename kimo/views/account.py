@@ -12,6 +12,7 @@ def login():
     password=request.form.get('password')
     result=db.fetch_one('select * from userInfo where email=%s and password=%s',[email,password])
     if result:
+     print(result)
      return render_template('/index.html')
 
     return render_template('login.html',error="请重新尝试")
