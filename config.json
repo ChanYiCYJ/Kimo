@@ -7,13 +7,15 @@
     }
     },
 
+  
   "database": {
-    "host": "127.0.0.1",
+    "host": "your-db-host",
     "port": 3306,
-    "user": "root",
-    "password": "a3022535842",
+    "user": "your-username",
+    "password": "your-password",
     "name": "kimoServer",
     "charset": "utf8"
   }
+
 
 }
