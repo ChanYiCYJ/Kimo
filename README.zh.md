@@ -8,7 +8,7 @@
 
 **一个轻量化的 Flask 后端博客系统**
 
-[English](./README.en.md) | 简体中文
+[English](./README.md) | 简体中文
 
 </div>
 
