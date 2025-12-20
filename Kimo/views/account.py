@@ -1,6 +1,8 @@
-from flask import Blueprint, render_template, request,redirect,url_for,session
+from flask import Blueprint, render_template, request, redirect, url_for, session
+
 from utils import db
-from utils.db import hash_password,db
+from utils.db import hash_password
+
 ac=Blueprint('account',__name__)
 @ac.route('/login',methods=['GET','POST'])
 def login():
