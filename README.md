@@ -259,7 +259,6 @@ Kimo/
 
 ## 🙋 获取帮助
 
-- 📖 查看 [Wiki](https://github.com/ChanYiCYJ/Kimo/wiki)
 - 💬 提交 [Issue](https://github.com/ChanYiCYJ/Kimo/issues)
 - 📧 联系维护者
 
