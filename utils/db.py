@@ -24,6 +24,13 @@ POOL = PooledDB(
 )
 
 
+def get_db_connection():
+    try:
+        conn = POOL.connection()
+        return conn
+    except pymysql.MySQLError as e:
+        print("数据库连接失败:", e)
+        return None
 
 def fetch_one(sql,params):
     conn = POOL.connection()

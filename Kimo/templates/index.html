@@ -15,7 +15,7 @@
 <header class="py-5 bg-white border-bottom">
   <div class="container">
     <h1 class="fw-bold">{{ config.title }}</h1>
-    <p class="text-muted">{{ config.content }} </p>
+      <p class="text-muted">{{ config.introduction }} </p>
   </div>
     <nav class="navbar navbar-expand-lg ">
   <div class="container">
@@ -38,11 +38,11 @@
     <!-- 文章列表 -->
     <div class="col-md-8">
       {% for post in posts %}
-      <div class="card mb-4 shadow-sm">
+        <div class="card mb-4 ">
         <div class="card-body">
           <h3 class="card-title">{{ post.title }}</h3>
           <p class="card-text text-muted">{{ post.summary }}</p>
-          <a href="/archive/{{ post.title }}" class="btn btn-outline-primary">阅读全文</a>
+            <a class="btn btn-outline-primary" href="/archive/{{ post.title }}">Read</a>
         </div>
       </div>
       {% endfor %}
