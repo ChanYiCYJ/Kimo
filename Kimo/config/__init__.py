@@ -1,5 +1,4 @@
 import json
-
 _CONFIG_CACHE = None
 
 def load_config(config_type, value, default=None):

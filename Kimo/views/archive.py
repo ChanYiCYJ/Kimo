@@ -1,11 +1,13 @@
-from flask import Blueprint, render_template, request, session
 import markdown
+from flask import Blueprint, render_template, request, session, jsonify
+
 from Kimo.config import load_config
 from utils import db
+
 bg=Blueprint('archive',__name__)
 
 @bg.route('/',methods=['GET','POST'])
-def index():
+def archive_list():
     dsb = session.get('user_role')
     post = db.fetchall('select * from blog')
     config =load_config('app','config')
@@ -17,10 +19,7 @@ def index():
 
 @bg.route('/archive/<string:archive_title>',methods=['GET','POST'])
 def archive(archive_title):
-    config = {
-        "title": "Hello World",
-        "content": "Hello World",
-    }
+    config = load_config('app', 'config')
     archive_page = db.fetch_one('select * from blog where title=%s', [archive_title, ])
     if request.method=='GET':
         content = markdown.markdown(
@@ -41,6 +40,22 @@ def archive(archive_title):
 
     return archive
 
-@bg.route('/Dashboard',methods=['POST','GET'])
-def archive_post(archive_title):
-    return render_template('archive.html')
+
+@bg.route('/post', methods=['GET', 'POST'])
+def archive_post():
+    config = load_config('app', 'config')
+    if request.method == 'GET':
+        return render_template('post.html', config=config)
+
+    data = request.get_json()
+    content = data.get('content')
+
+    if not content:
+        return jsonify({'message': '内容为空'}), 400
+
+    try:
+        db.fetch_one('insert into blog values (%s)', [content])
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
+
+    return jsonify({'message': 'ok'})
