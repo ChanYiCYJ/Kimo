@@ -43,19 +43,25 @@ def archive(archive_title):
 
 @bg.route('/post', methods=['GET', 'POST'])
 def archive_post():
-    config = load_config('app', 'config')
-    if request.method == 'GET':
-        return render_template('post.html', config=config)
+    check_user = session.get('user_role')
+    if check_user == 0:
+        config = load_config('app', 'config')
+        if request.method == 'GET':
+            return render_template('post.html', config=config)
 
-    data = request.get_json()
-    content = data.get('content')
+        if request.method == 'POST':
+            print('执行post')
+            title = request.json.get('title')
+            content = request.json.get('content')
+            print(content)
+            if not content:
+                return jsonify({'message': '内容为空'}), 400
 
-    if not content:
-        return jsonify({'message': '内容为空'}), 400
+            try:
+                db.increase('insert into blog(title,content) values (%s,%s)', [title, content])
+            except Exception as e:
+                return jsonify({'message': str(e)}), 500
 
-    try:
-        db.fetch_one('insert into blog values (%s)', [content])
-    except Exception as e:
-        return jsonify({'message': str(e)}), 500
+            return jsonify({'message': 'ok'})
 
-    return jsonify({'message': 'ok'})
+    return '无权访问'
