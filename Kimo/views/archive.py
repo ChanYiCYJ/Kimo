@@ -12,14 +12,15 @@ def index():
     post = db.fetchall('select * from blog')
     config =load_config('app','config')
     if request.method=='GET':
-        return render_template('index.html',dashboard=dsb,config=config,posts=post)
+        return render_template('index.html', dashboard=dsb, page_title=config["title"],
+                               page_subtitle=config["introduction"], config=config, posts=post)
 
 
     return post
 
 @bg.route('/archive/<string:archive_title>',methods=['GET','POST'])
 def archive(archive_title):
-    config = load_config('app', 'config')
+
     archive_page = db.fetch_one('select * from blog where title=%s', [archive_title, ])
     if request.method=='GET':
         content = markdown.markdown(
@@ -36,26 +37,34 @@ def archive(archive_title):
 )
 
         print(archive_page)
-        return render_template('archive.html',config=config,article=archive_page,content=content)
+        return render_template('archive.html', page_title=archive_page['title'],
+                               page_subtitle=f"Created: {archive_page['created']}", article=archive_page,
+                               content=content)
 
     return archive
 
 
 @bg.route('/post', methods=['GET', 'POST'])
 def archive_post():
-    config = load_config('app', 'config')
-    if request.method == 'GET':
-        return render_template('post.html', config=config)
+    check_user = session.get('user_role')
+    if check_user == 0:
+        config = load_config('app', 'config')
+        if request.method == 'GET':
+            return '不支持GET调用'
 
-    data = request.get_json()
-    content = data.get('content')
+        if request.method == 'POST':
+            print('执行post')
+            title = request.json.get('title')
+            content = request.json.get('content')
+            print(content)
+            if not content:
+                return jsonify({'message': '内容为空'}), 400
 
-    if not content:
-        return jsonify({'message': '内容为空'}), 400
+            try:
+                db.increase('insert into blog(title,content) values (%s,%s)', [title, content])
+            except Exception as e:
+                return jsonify({'message': str(e)}), 500
 
-    try:
-        db.fetch_one('insert into blog values (%s)', [content])
-    except Exception as e:
-        return jsonify({'message': str(e)}), 500
+            return jsonify({'message': 'ok'})
 
-    return jsonify({'message': 'ok'})
+    return '无权访问'

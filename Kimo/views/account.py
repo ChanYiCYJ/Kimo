@@ -44,8 +44,8 @@ def register():
         return render_template('login.html', modal="用户已存在，请重新注册")
 
     hash_prd = hash_password(password)
-    db.register_user('INSERT INTO userInfo(email,password,user_name) VALUES(%s,%s,%s)',
-                     [email, hash_prd, username])
+    db.increase('INSERT INTO userInfo(email,password,user_name) VALUES(%s,%s,%s)',
+                [email, hash_prd, username])
     return render_template('login.html', modal="注册成功，请登录")
 
 @ac.route('/logout')
@@ -61,8 +61,9 @@ def users():
 def dashboard():
     if request.method=='GET':
         check_user = session.get('user_role')
+        article = 'Dashboard'
         if check_user == 0:
-            return '欢迎管理员'
+            return render_template('dashboard.html', page_title=article, article=article)
 
         print(check_user)
-    return '无权访问'
+    return redirect(url_for('account.login'))

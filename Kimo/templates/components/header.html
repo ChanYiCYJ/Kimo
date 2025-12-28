@@ -1,0 +1,25 @@
+<!-- Header -->
+<header class="bg-white border-b   p-3">
+    <div class="max-w-6xl mx-auto px-4 py-10">
+        <h1 class="text-4xl font-bold mb-2">{{ page_title }}</h1>
+        {% if page_subtitle %}
+        <p class="text-gray-500">{{ page_subtitle }}</p>
+        {% endif %}
+    </div>
+
+
+    <!-- Nav -->
+    <nav class="border-t">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-end gap-6 text-sm">
+            {% if article %}
+            <a class="text-gray-500  hover:text-blue-500" href="/">
+                ← 返回首页
+            </a>
+            {% endif %}
+            <a class="hover:text-blue-500" href="/about">关于</a>
+            {% if dashboard %}
+            <a class="hover:text-blue-500" href="/dashboard">Dashboard</a>
+            {% endif %}
+        </div>
+    </nav>
+</header>
