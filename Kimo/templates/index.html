@@ -11,23 +11,7 @@
 <body class="bg-gray-100 text-gray-800">
 
 <!-- Header -->
-<header class="bg-white border-b rounded-xl m-3 p-3">
-    <div class="max-w-6xl mx-auto px-4 py-10">
-        <h1 class="text-4xl font-bold mb-2">{{ config.title }}</h1>
-        <p class="text-gray-500">{{ config.introduction }}</p>
-  </div>
-
-    <!-- Nav -->
-    <nav class="border-t">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-end gap-6 text-sm">
-            <a class="hover:text-blue-600" href="/">首页</a>
-            <a class="hover:text-blue-600" href="/about">关于</a>
-            {% if dashboard %}
-            <a class="hover:text-blue-600" href="/dashboard">Dashboard</a>
-            {% endif %}
-        </div>
-    </nav>
-</header>
+{% include "components/header.html" %}
 
 <!-- Main -->
 <main class="max-w-6xl mx-auto px-4 my-10">

@@ -12,14 +12,15 @@ def index():
     post = db.fetchall('select * from blog')
     config =load_config('app','config')
     if request.method=='GET':
-        return render_template('index.html',dashboard=dsb,config=config,posts=post)
+        return render_template('index.html', dashboard=dsb, page_title=config["title"],
+                               page_subtitle=config["introduction"], config=config, posts=post)
 
 
     return post
 
 @bg.route('/archive/<string:archive_title>',methods=['GET','POST'])
 def archive(archive_title):
-    config = load_config('app', 'config')
+
     archive_page = db.fetch_one('select * from blog where title=%s', [archive_title, ])
     if request.method=='GET':
         content = markdown.markdown(
@@ -36,7 +37,9 @@ def archive(archive_title):
 )
 
         print(archive_page)
-        return render_template('archive.html',config=config,article=archive_page,content=content)
+        return render_template('archive.html', page_title=archive_page['title'],
+                               page_subtitle=f"Created: {archive_page['created']}", article=archive_page,
+                               content=content)
 
     return archive
 
@@ -47,7 +50,7 @@ def archive_post():
     if check_user == 0:
         config = load_config('app', 'config')
         if request.method == 'GET':
-            return render_template('post.html', config=config)
+            return '不支持GET调用'
 
         if request.method == 'POST':
             print('执行post')

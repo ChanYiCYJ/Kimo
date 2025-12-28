@@ -66,4 +66,4 @@ def dashboard():
             return render_template('dashboard.html')
 
         print(check_user)
-    return redirect(url_for('archive.index'))
+    return redirect(url_for('account.login'))
