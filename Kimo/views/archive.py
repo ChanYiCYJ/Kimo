@@ -36,7 +36,6 @@ def archive(archive_title):
             ]
 )
 
-        print(archive_page)
         return render_template('archive.html', page_title=archive_page['title'],
                                page_subtitle=f"Created: {archive_page['created']}", article=archive_page,
                                content=content)

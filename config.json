@@ -1,20 +1,28 @@
 {
   "app": {
     "config": {
+
     "title": "Hello World",
-      "introduction": "Hello World"
+    "introduction": "Hello World",
+    "theme": "Default"
     }
     },
 
 
+  
   "database": {
-    "host": "127.0.0.1",
+    "host": "your-db-host",
     "port": 3306,
-    "user": "root",
-    "password": "a3022535842",
-    "name": "kimoServer",
-    "charset": "utf8"
+    "user": "your-username",
+    "password": "your-password",
+    "name": "your-sql-name",
+    "charset": "utf8mb4"
   }
 
+
+  "redis" : {
+    "host":"your-redis-host",
+    "port":6379
+  }
 
 }
