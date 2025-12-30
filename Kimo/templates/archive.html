@@ -1,47 +1,16 @@
-<!doctype html>
-<html lang="zh">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ article.title }} - {{ config.title }}</title>
-
-    <!-- Markdown 样式 -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css">
-
-    <!-- Tailwind -->
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-
-<body class="bg-gray-100 text-gray-800">
-<!-- Header -->
-
-{% include "components/header.html" %}
-
-
-
-<!-- Main -->
-<main class="max-w-6xl mx-auto px-4 my-10">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-
+{% extends "layout.html" %}
+{% block head %}
+<title>{{ article.title }} - {{ config.title }}</title>
+{% endblock %}
+{% block content %}
         <!-- 正文 -->
         <article class="md:col-span-2 bg-white rounded-xl shadow-sm p-6">
             <div class="markdown-body max-w-none">
         {{ content | safe }}
             </div>
         </article>
-
-        <!-- Sidebar -->
-        <aside class="space-y-6">
-
-            <!-- 作者 -->
-            <div class="bg-white rounded-xl shadow-sm p-6">
-                <h3 class="font-semibold mb-2">关于作者</h3>
-                <p class="text-gray-500 text-sm">
-                    学生 / 技术爱好者
-                </p>
-            </div>
-
+    {% endblock %}
+        {% block footer %}
             <!-- 文章信息 -->
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h3 class="font-semibold mb-3">文章信息</h3>
@@ -49,9 +18,5 @@
             </div>
 
         </aside>
-
-  </div>
-</main>
-
-</body>
-</html>
+    </div>
+        {% endblock %}

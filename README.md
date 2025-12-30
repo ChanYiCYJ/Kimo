@@ -103,7 +103,7 @@ CREATE TABLE `userinfo` (
 Edit `config.json`:
 
 ```json
-{
+
   "database": {
     "host": "your-db-host",
     "port": 3306,
@@ -112,7 +112,7 @@ Edit `config.json`:
     "name": "your-sql-name",
     "charset": "utf8mb4"
   }
-}
+
 ```
 
 5. Run the application

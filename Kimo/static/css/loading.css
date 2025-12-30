@@ -1,0 +1,17 @@
+/* static/css/loading.css */
+
+/* 加载条 */
+#loading-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background-color: #4e80e3;
+    z-index: 9999;
+    transition: width 0.3s ease-out;
+}
+
+#loading-bar.active {
+    width: 100%;
+}

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    {% block head %}
+        <title>{{ config.title }}</title>
+    {% endblock %}
+    <!-- Markdown 样式 -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/loading.css') }}">
+          <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 text-gray-800">
+    <div id="loading-bar"></div>
+     {% block header %}
+        <!-- Header -->
+        {% include "components/header.html" %}
+     {% endblock %}
+    <main class="max-w-6xl mx-auto px-4 my-10">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="col-span-1 md:col-span-2 space-y-6">
+            {% block content %}{% endblock %}
+        </div>
+        <div class="col-span-1">
+            {% block footer %}
+            <aside class="space-y-6">
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="font-semibold mb-2">关于我</h3>
+                    <p class="text-gray-500 text-sm">
+                        学生 / 技术爱好者
+                    </p>
+                </div>
+            </aside>
+            {% endblock %}
+        </div>
+    </div>
+</main>
+</body>
+    <script src="{{ url_for('static', filename='js/loading.js') }}"></script>
+    {% block script %}{% endblock %}
+</html>
