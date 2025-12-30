@@ -1,6 +1,5 @@
 config.json
 .idea/
 .venv/
-_pychache_/
-*.pyc
+_pychache_
 .DS_Store
