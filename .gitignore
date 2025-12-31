@@ -2,4 +2,6 @@ config.json
 .idea/
 .venv/
 .DS_Store
-__pycache__
+__pycache__/
+*.pyc
+utils/__pycache__/db.cpython-314.pyc
