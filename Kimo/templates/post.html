@@ -43,52 +43,34 @@
                 </button>
             </div>
         </aside>
+<!-- Modal -->
+<div class="fixed inset-0 bg-black/40 flex items-center justify-center hidden"
+     id="modal">
+    <div class="bg-white rounded-xl w-80 p-6 text-center">
+        <h3 class="font-semibold mb-3">提示</h3>
+        <p class="text-gray-600 mb-4" id="modal-text"></p>
+        <button class="px-4 py-2 bg-gray-200 rounded-lg"
+                onclick="closeModal()">
+            我知道了
+        </button>
+  </div>
+</div>
+<script>
+function showModal(message) {
+  document.getElementById('modal-text').innerText = message
+  document.getElementById('modal').classList.remove('hidden')
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.add('hidden')
+}
+</script>
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/vditor/dist/index.min.js"></script>
 
-<script>
-    const vditor = new Vditor('vditor', {
-      height: 420,
-      placeholder: '在这里输入 Markdown 内容...',
-      toolbarConfig: { pin: true },
-      cache: { id: 'vditor-post', enable: true }
-    });
+<script src="/static/js/vditor_send.js"></script>
 
-    document.getElementById('sendBtn').addEventListener('click', async () => {
-      const title = document.getElementById('titleInput').value.trim();
-      const content = vditor.getValue().trim();
-
-      if (!title) {
-        alert('标题不能为空');
-        return;
-      }
-
-      if (!content) {
-        alert('内容不能为空');
-        return;
-      }
-
-      const res = await fetch('/post', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ title, content })
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        alert('发布成功');
-        vditor.setValue('')
-
-        window.location.href = '/ ';
-      } else {
-        alert(data.message || '发布失败');
-      }
-    });
-</script>
 
 </body>
 </html>
