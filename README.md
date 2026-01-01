@@ -74,38 +74,16 @@ venv\Scripts\activate    # Windows
 pip install -r requirements.txt
 ```
 
-4. Create and configure the database
-   Run the SQL statements below in your database
-
-```bash
--- kimoserver.blog definition
-
-CREATE TABLE `blog` (
-  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `title` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  UNIQUE KEY `blog_unique` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-
--- kimoserver.userinfo definition
-
-CREATE TABLE `userinfo` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `email` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `user_name` varchar(255) DEFAULT NULL,
-  `role` tinyint NOT NULL DEFAULT '1',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `userInfo_unique` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-```
-
-Edit `config.json`:
-
+4. Create `config.json`:
 ```json
-
+{
+  "app": {
+    "config": {
+      "title": "Hello World",
+      "introduction": "Hello World",
+      "theme": "Default"
+    }
+  },
   "database": {
     "host": "your-db-host",
     "port": 3306,
@@ -114,16 +92,21 @@ Edit `config.json`:
     "name": "your-sql-name",
     "charset": "utf8mb4"
   }
+}
 
 ```
 
-5. Run the application
-
+5. 安装说明
+配置并创建config.json后，使用
+```bash
+python manage.py
+```
+创建数据表和创建管理员账户，最后运行
 ```bash
 python app.py
 ```
-
-Application will start at: `http://localhost:5000`
+建议将项目克隆至电脑运行manage.py再将项目配置至云端
+Application will start at: `http://localhost:80`
 
 ## 📄 License
 

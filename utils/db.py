@@ -5,60 +5,94 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from Kimo.config import load_config
 
-dbn = 'database'
-POOL = PooledDB(
-    creator=pymysql,
-    maxconnections=10,
-    mincached=1,
-    maxcached=1,
-    maxshared=1,
-    blocking=True,
-    maxusage=None,
-    ping=0,
-    host=load_config(dbn, 'host'),
-    port=load_config(dbn, 'port'),
-    user=load_config(dbn, 'user'),
-    password=load_config(dbn, 'password'),
-    db=load_config(dbn, 'name'),
-    charset=load_config(dbn, 'charset')
-)
+_db_pool = None
+
+
+def init_db_pool():
+    global _db_pool
+    if _db_pool is not None:
+        return _db_pool
+
+    try:
+        _db_pool = PooledDB(
+            creator=pymysql,
+            maxconnections=10,
+            blocking=True,
+            host=load_config('database', 'host'),
+            port=load_config('database', 'port'),
+            user=load_config('database', 'user'),
+            password=load_config('database', 'password'),
+            db=load_config('database', 'name'),
+            charset=load_config('database', 'charset'),
+        )
+        return _db_pool
+    except Exception as e:
+        print("数据库初始化失败:", e)
+        _db_pool = None
+        return None
 
 
 def get_db_connection():
+    pool = init_db_pool()
+    if not pool:
+        return None
+
     try:
-        conn = POOL.connection()
-        return conn
-    except pymysql.MySQLError as e:
+        return pool.connection()
+    except Exception as e:
         print("数据库连接失败:", e)
         return None
 
-def fetch_one(sql,params):
-    conn = POOL.connection()
-    cursor = conn.cursor(cursor = cursors.DictCursor)
-    cursor.execute(sql,params)
-    result = cursor.fetchone()
-    cursor.close()
-    conn.close()
-    return result
+def fetchall(sql, params=None):
+    conn = get_db_connection()
+    if not conn:
+        return []
 
-
-def implement(sql, params):
-    conn = POOL.connection()
-    cursor = conn.cursor()
-    cursor.execute(sql,params)
-    result = conn.commit()
-    cursor.close()
-    conn.close()
-    return result
-
-def fetchall(sql):
-    conn = POOL.connection()
     cursor = conn.cursor(cursor=cursors.DictCursor)
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return result
+    try:
+        cursor.execute(sql, params or ())
+        return cursor.fetchall()
+    except Exception as e:
+        print("SQL 执行失败:", e)
+        return []
+    finally:
+        cursor.close()
+        conn.close()
+
+
+def implement(sql, params=None):
+    conn = get_db_connection()
+    if not conn:
+        return False
+
+    cursor = conn.cursor()
+    try:
+        cursor.execute(sql, params or ())
+        conn.commit()
+        return True
+    except Exception as e:
+        conn.rollback()
+        print("SQL 执行失败:", e)
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
+def fetch_one(sql, params=None):
+    conn = get_db_connection()
+    if not conn:
+        return None
+
+    cursor = conn.cursor(cursor=cursors.DictCursor)
+    try:
+        cursor.execute(sql, params or ())
+        return cursor.fetchone()
+    except Exception as e:
+        print("SQL 执行失败:", e)
+        return None
+    finally:
+        cursor.close()
+        conn.close()
 
 
 def hash_password(password) -> str:

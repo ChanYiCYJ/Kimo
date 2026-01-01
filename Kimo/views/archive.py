@@ -72,7 +72,7 @@ def archive_post():
     return '无权访问'
 
 @bg.route('/tags', methods=['GET', 'POST'])
-def tag():
+def tags():
         tag_all = db.fetchall('select * from tags ', )
         if request.method == 'GET':
             config = load_config('app', 'config')
