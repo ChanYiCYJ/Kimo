@@ -1,48 +1,31 @@
-import markdown
 from flask import Blueprint, render_template, request, session, jsonify,redirect,url_for
 
 from Kimo.config import load_config
 from utils import db
-
+from Kimo.services import ArchivesService as Archive
 bg=Blueprint('archive',__name__)
 
 @bg.route('/',methods=['GET','POST'])
 def index():
-    dsb = session.get('user_role')
-    post = db.fetchall('select * from archives')or []
-    category_all = db.fetchall('select * from categories ', )or []
-    archive_post = db.fetchall('select ' \
-    'a.id,a.title,a.content,a.created,c.name as category_name from archives a left join categories c on a.category_id=c.id')or []
-    tag_all = db.fetchall('select * from tags ', )or []
+    category_all = Archive.get_all_categories()
+    archive_all = Archive.get_all_archives()
+    tag_all = Archive.get_all_tags()
     config =load_config('app','config')
     if request.method=='GET':
-        return render_template('index.html', dashboard=dsb, page_title=config["title"],
-                               page_subtitle=config["introduction"], config=config, posts=archive_post,categorys=category_all,tags=tag_all)
+        return render_template('index.html', page_title=config["title"],
+                               page_subtitle=config["introduction"], config=config, posts=archive_all,categorys=category_all,tags=tag_all)
 
+    return archive_all
 
-    return post
+@bg.route('/archive/<int:archive_id>',methods=['GET','POST'])
+def archive(archive_id):
 
-@bg.route('/archive/<string:archive_title>',methods=['GET','POST'])
-def archive(archive_title):
-
-    archive_page = db.fetch_one('select * from archives where title=%s', [archive_title, ])
+    archive_page = Archive.get_archive_page(archive_id)
+    print(archive_page)
     if request.method=='GET':
-        content = markdown.markdown(
-    archive_page['content'],
-            extensions=[
-                "tables",
-                "toc",
-                "fenced_code",
-                "pymdownx.superfences",
-                "pymdownx.tasklist",
-                "pymdownx.details",
-                "pymdownx.inlinehilite",
-            ]
-)
-
         return render_template('archive.html', page_title=archive_page['title'],
-                               page_subtitle=f"Created: {archive_page['created']}", article=archive_page,
-                               content=content)
+                               page_subtitle=f"Created: {archive_page['created']}", article=archive_page,content=archive_page['content']
+                               )
 
     return archive
 
@@ -50,7 +33,6 @@ def archive(archive_title):
 
 @bg.route('/post', methods=[ 'POST'])
 def archive_post():
-
         if request.method == 'POST':
             print('执行post')
             title = request.json.get('title')
@@ -59,20 +41,10 @@ def archive_post():
             print(content)
             print(title)
             print(category_name)
-            if not content:
-                return jsonify({'message': '内容为空'}), 400
-
-            try:
-                if not category_name:
-                    category_id = None
-                else:
-                    category_id = db.fetch_one('select id from categories where name=%s', [category_name,])['id']
-                print(category_id)
-                db.implement('insert into archives(title,content,category_id) values (%s,%s,%s)', [title, content,category_id])  
-            except Exception as e:
-                return jsonify({'message': str(e)}), 500
-
-            return jsonify({'message': 'ok'})
+            create_page=Archive.send_archive(title,content,category_name)
+            if not create_page['status']:
+                return jsonify({'message': create_page['msg']}),500    
+            return jsonify({'message': create_page['msg']})
 
 
 
@@ -107,7 +79,7 @@ def editor():
 @bg.route('/editor/<int:post_id>', methods=['GET', 'POST'])
 def edit(post_id):
     print(post_id)
-    result = db.fetch_one('select * from archives where id=%s', [post_id, ])
+    result = Archive.edit_archive(post_id)
     print(result)
     return render_template('post.html', postId=result['id'], article=result['content'])
 
@@ -118,10 +90,8 @@ def archive_delete():
     check_user = session.get('user_role')
     if check_user == 0:
         post_id = request.json.get('post_id')
-        check = db.fetch_one('select * from archives where id=%s', [post_id, ])
-        if check:
-            db.implement('delete from archives where id=%s', [post_id, ])
-            return jsonify({'message': '删除成功'})
-
-        return jsonify({'message': '没有这篇文章'}), 400
+        result = Archive.delete_archive(post_id)
+        if not result['status']:
+            return jsonify({'message': result['msg']}),500
+        return jsonify({'message': result['msg']})       
     return '无权访问', 400

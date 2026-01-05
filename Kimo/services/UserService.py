@@ -27,21 +27,26 @@ def login(user_noe, password):
 def register(username,email,password):
     if not username or not email or not password:
         return {
-        "status": 0,
+        "status": False,
         "msg": '请填写必要字段'
     }
     if user.get_user_by_name(username):
         return {
-        "status": 0,
+        "status": False,
         "msg": '用户已存在'
     }
     if user.get_user_by_email(email):
         return {
-        "status": 0,
+        "status": False,
         "msg": '邮箱已存在'
     }
-    user.insert_user_info(username,email,hash.hash_password(password))
+    result= user.insert_user_info(username,email,hash.hash_password(password))
+    if not result:
+        return{
+        "status": False,
+        "msg": '注册失败'
+        }
     return {
-        "status": 1,
+        "status": True,
         "msg": '注册成功'
     }

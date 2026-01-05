@@ -14,7 +14,11 @@
             <!-- 文章信息 -->
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h3 class="font-semibold mb-3">文章信息</h3>
-
+                {% if article.category_name  %}
+                 <button class="flex h-9 shrink-0 items-center justify-center px-5 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 hover:border-primary/50 text-[#111618] dark:text-white transition-all active:scale-95">
+                {{ article.category_name }}
+            </button>
+                {% endif %}
             </div>
 
         </aside>
