@@ -17,13 +17,46 @@
 </head>
 
 <body class="bg-gray-100">
-
-<main class="max-w-7xl mx-auto p-6 space-y-3">
-    <!-- 标题 -->
+<header class="bg-white">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="flex h-16 items-center justify-between">
+      <div class="flex-1 md:flex md:items-center md:gap-12">
+         <nav aria-label="Global">
+          <ul class="flex-wrap items-center gap-6 text-sm">
+            
+            <li>
+               <!-- 标题 -->
             <input
-    class="w-full text-4xl  bg-transparent focus:outline-none ml-3 mb-5"
+    class="flex-wrap w-full text-2xl ml-5 bg-transparent focus:outline-none "
     placeholder="文章标题" id="titleInput"
   >
+              
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="md:flex md:items-center md:gap-12">
+       
+        <nav aria-label="Global" class="hidden md:block">
+          <ul class="flex items-center gap-6 text-sm">
+            
+          </ul>
+        </nav>
+
+        <div class="flex items-center gap-4">
+          <div class="sm:flex sm:gap-4">
+            <button class="px-3 py-2 rounded-xl bg-gray-200">保存草稿</button>
+             <button class="px-7 py-2 rounded-xl bg-black text-white" id="sendBtn">发布</button>
+
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<main class="max-w-7xl mx-auto p-6 space-y-3">
+    
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 ">
         <div class="col-span-1 md:col-span-2 space-y-6 basis-3/4">
 
@@ -37,30 +70,73 @@
 
     <div class="col-span-1">
         <!-- 操作 -->
-  <div class="flex justify-start gap-3 mb-5">
-    <button class="px-3 py-2 rounded-xl bg-gray-200">保存草稿</button>
-    <button class="px-7 py-2 rounded-xl bg-black text-white" id="sendBtn">发布</button>
+  <div class="flex justify-start gap-3 ">
+    
+   
       {% if edit %}
       <button class="px-7 py-2 rounded-xl bg-black text-white">编辑</button>
       {% endif %}
   </div>
-        <aside class="space-y-6 mb-5">
-            <div class="bg-white rounded-xl shadow-sm  p-3">
-                     <!-- 封面 -->
-  <section class="rounded-xl border-2 border-dashed p-6 text-center space-y-6">
-    <p class="text-gray-500 mb-3">文章封面</p>
-    <label class="cursor-pointer inline-block bg-black text-white px-5 py-2 rounded-lg">
-      选择图片
-      <input type="file" hidden>
-    </label>
-  </section>
-    </div>
-            </SECTION>
-            </aside>
+        <aside class="space-y-6 mb-2">
+  <div class="bg-white rounded-2xl mb-4 shadow-sm border border-gray-100 p-4">
     <input rows="2"
-    class="flex flex-wrap w-full rounded-xl border border-gray-200 p-4 space-y-6"
+    class="flex flex-wrap w-full rounded-xl border border-gray-200 mb-3 p-4 space-y-6"
     placeholder="文章简介（无填写则选取开头）" 
     id="descrInput">
+    <!-- 封面上传区 -->
+    <section
+      class="group relative rounded-2xl border-2 border-dashed border-gray-200
+             p-6 text-center space-y-4
+             transition
+             hover:border-black/40 hover:bg-gray-50"
+    >
+      <p class="text-sm text-gray-500 tracking-wide">
+        设置封面图片
+      </p>
+
+      <!-- 选择图片 -->
+      <label
+        class="inline-flex items-center justify-center
+               gap-2 cursor-pointer
+               bg-black text-white
+               px-5 py-2.5 rounded-xl
+               text-sm font-medium
+               transition
+               hover:bg-gray-800
+               active:scale-95"
+      >
+        选择图片
+        <input
+          id="coverInput"
+          type="file"
+          hidden
+          accept="image/*"
+        />
+      </label>
+
+      <!-- 预览图 -->
+      <img
+        id="coverPreview"
+        class="hidden mx-auto max-h-48 rounded-xl shadow-md transition"
+      />
+
+      <!-- 删除按钮（弱化） -->
+      <button
+        id="deleteCoverButton"
+        class="text-sm text-gray-500
+               px-4 py-2 rounded-xl
+               hover:bg-gray-100 hover:text-gray-700
+               transition hidden"
+      >
+        删除图片
+      </button>
+
+    </section>
+    
+  </div>
+</aside>
+
+    
 
 
 
@@ -68,7 +144,7 @@
   <!-- 分类 -->
   <section class="grid grid-cols-1 md:grid-cols-2 gap-6 space-y-6">
     <div>
-        <div class="flex justify-start gap-3 mt-5 mb-5 ml-1 mb-5">
+        <div class="flex justify-start gap-3  mb-5 ml-1 mb-5">
       <label class="text-xl font-bold  block">分类</label>
         <label for="CategoryConditions" class="relative block h-8 w-12 [-webkit-tap-highlight-color:transparent]">
   <input type="checkbox" id="CategoryConditions" class="peer sr-only">
@@ -76,13 +152,13 @@
   <span class="absolute inset-0 m-auto h-2 rounded-full bg-gray-300"></span>
 
   <span class="absolute inset-y-0 start-0 m-auto size-6 rounded-full bg-gray-500 transition-[inset-inline-start] peer-checked:start-6 peer-checked:*:scale-0">
-    <span class="absolute inset-0 m-auto size-4 rounded-full bg-gray-200 transition-transform">
+    <span class=" absolute inset-0 m-auto size-4 rounded-full bg-gray-200 transition-transform">
     </span>
   </span>
 </label>
             </div>
      <div class="relative hidden" id="CategoryList">
-    <input type="text" id="Headline" list="HeadlineList" placeholder="分类" class="px-3 py-2 mt-0.5 w-full rounded-xl border-black-300 pe-8  sm:text-sm [&amp;::-webkit-calendar-picker-indicator]:opacity-0">
+    <input type="text" id="Headline" list="HeadlineList" placeholder="分类" class="px-5 py-2 w-full rounded-xl border-black-300 pe-8  sm:text-sm [&amp;::-webkit-calendar-picker-indicator]:opacity-0">
 
     <span class="absolute inset-y-0 right-0 grid w-8 place-content-center text-black-700">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
@@ -145,6 +221,12 @@ function closeModal() {
   const vditor = new Vditor('vditor', {
       height: 420,
       placeholder: '在这里输入 Markdown 内容...',
+       upload: {
+      url: '/upload/image/vditor',   // ⭐ 上传接口
+      fieldName: 'file',          // ⭐ 后端接收的字段名
+      max: 5 * 1024 * 1024,        // 5MB
+      accept: 'image/*',
+       },
        toolbar: [
       'bold',
       'italic',
@@ -184,7 +266,6 @@ function closeModal() {
         showModal('标题不能为空');
         return;
       }
-
       if (!content) {
         showModal('内容不能为空');
         return;
@@ -200,7 +281,7 @@ function closeModal() {
   headers: {
     'Content-Type': 'application/json'
   },
-  body: JSON.stringify({ title, content ,category_name,description_result})
+  body: JSON.stringify({ title, content ,category_name,description_result,coverUrl})
 });
 
 const data = await res.json();
@@ -217,6 +298,42 @@ if (res.ok) {
 }
     });
 </script>
+<script>
+let coveUrl;
+const input = document.getElementById("coverInput");
+const preview = document.getElementById("coverPreview");
+
+let coverUrl = null; // 最终用于提交文章
+
+input.addEventListener("change", async () => {
+  const file = input.files[0];
+  if (!file) return;
+
+  // 1️⃣ 本地预览（用户体验）
+  preview.src = URL.createObjectURL(file);
+  preview.classList.remove("hidden");
+
+  // 2️⃣ 组装 FormData
+  const formData = new FormData();
+  formData.append("file", file);
+
+  // 3️⃣ 上传
+  const res = await fetch("/upload/image", {
+    method: "POST",
+    body: formData
+  });
+
+  const image_data = await res.json();
+  if (image_data.status) {
+    coverUrl = image_data.url;
+    console.log("上传成功：", coverUrl);
+
+  } else {
+    alert(image_data.msg || "上传失败");
+  }
+});
+</script>
+
 
 </body>
 </html>

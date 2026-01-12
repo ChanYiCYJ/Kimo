@@ -1,10 +1,25 @@
 <article
-  class="bg-white rounded-2xl shadow-sm p-6 transition
-         hover:shadow-md hover:-translate-y-0.1"
+  class="group bg-white rounded-2xl shadow-sm overflow-hidden
+         transition hover:shadow-md hover:-translate-y-0.5"
 >
-  <div class="flex flex-col gap-4">
-    {%  if post.category_name %}
-    <!-- Category -->
+  <!-- Cover -->
+{% if post.cover_image %}
+<div class="aspect-[16/9] overflow-hidden bg-gray-100">
+  <img
+    src="{{ post.cover_image }}"
+    alt="{{ post.title }}"
+    class="w-full h-full object-cover
+           transition-transform duration-300
+           group-hover:scale-105"
+  />
+</div>
+{% endif %}
+
+
+  <!-- Content -->
+  <div class="flex flex-col gap-3 p-6 h-full">
+    
+    {% if post.category_name %}
     <!-- Tag / Badge -->
     <span
       class="w-fit inline-flex items-center
@@ -13,19 +28,22 @@
              rounded-full border border-primary/20"
     >{{ post.category_name }}</span>
     {% endif %}
+
     <!-- Title -->
-    <h2 class="text-xl font-semibold leading-snug">
+    <h2 class="text-lg font-semibold leading-snug text-gray-900">
       {{ post.title }}
     </h2>
+
     {% if post.description %}
-    <span>
-      {{ post.description }}...
-    </span>
+    <p class="text-sm text-gray-600 leading-relaxed line-clamp-3">
+      {{ post.description }}
+    </p>
     {% endif %}
+
     <!-- Action -->
     <a
       href="/article/{{ post.id }}"
-      class="inline-flex items-center gap-1
+      class="mt-auto inline-flex items-center gap-1
              text-sm font-medium text-gray-700
              w-fit px-4 py-2 rounded-full border
              hover:bg-gray-100 hover:text-gray-900
@@ -34,6 +52,5 @@
       Read
       <span class="transition group-hover:translate-x-0.5">→</span>
     </a>
-
   </div>
 </article>

@@ -2,6 +2,7 @@ from Kimo.models import articles
 import markdown
 from utils import pinyin
 from bs4 import BeautifulSoup as bs
+from utils import upload
 def get_all_articles():
     return articles.get_all_articles()
 
@@ -46,7 +47,7 @@ def get_article_page(article_id):
         "category_name":category_name,
     }
 
-def send_article(title,content,category_name,description):
+def send_article(title,content,category_name,description,cover_image):
     if not (title and content):
         return {
             "status":False,
@@ -59,14 +60,15 @@ def send_article(title,content,category_name,description):
         soup = bs(html, "html.parser")
         text = soup.get_text()
         description =text.strip().replace('\n', '')[:20]
-
+    if not cover_image:
+        cover_image=None
     if not category_name:
         category_id = None
     else:
         category_id = articles.get_category_id_by_name(category_name)
         if not category_id:
            articles.create_category(category_name,pinyin.translate(category_name))
-    article_result=articles.create_article(title,content,category_id,description)
+    article_result=articles.create_article(title,content,category_id,description,cover_image)
     if not article_result:
         return{
                    "status":False,
@@ -97,3 +99,20 @@ def delete_article(id):
         "status": True,
         "msg":'删除成功'
     }
+
+def upload_image(file):
+    return upload.upload_file(file)
+
+def upload_image_by_vditor(file):
+    result=upload.upload_file(file)
+    if result['status'] == 1:
+        return{
+            "code": 0,
+            "msg": "ok",
+            "data": {
+              "errFiles": [],
+               "succMap": {
+                 result['filename']: f"/static/uploads/{result['filename']}"
+                }
+            }
+        }
