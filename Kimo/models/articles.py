@@ -1,7 +1,7 @@
 from utils import db
 
 def get_all_articles():
-    return db.fetchall('SELECT a.id,a.title,a.content,a.created,a.description,c.name AS category_name FROM articles a LEFT JOIN categories c ON a.category_id = c.id ORDER BY a.created DESC;')or []
+    return db.fetchall('SELECT a.id,a.title,a.content,a.created,a.description,a.cover_image,c.name AS category_name FROM articles a LEFT JOIN categories c ON a.category_id = c.id ORDER BY a.created DESC;')or []
 
 def get_article_by_title(titile):
     return db.fetch_one('SELECT * FROM articles WHERE title LIKE %s',[titile])or []
@@ -9,8 +9,8 @@ def get_article_by_title(titile):
 def get_article_by_id(id):
     return db.fetch_one('SELECT * FROM articles WHERE id=%s',[id])or []
 
-def create_article(title,content,category_id,description):
-    return db.implement('insert into articles(title,content,category_id,description) values (%s,%s,%s,%s)', [title, content,category_id,description])or []
+def create_article(title,content,category_id,description,cover_image):
+    return db.implement('insert into articles(title,content,category_id,description,cover_image) values (%s,%s,%s,%s,%s)', [title, content,category_id,description,cover_image])or []
 
 def delete_article(id):
     return db.implement('delete from articles where id=%s', [id, ])

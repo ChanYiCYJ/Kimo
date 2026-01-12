@@ -10,3 +10,4 @@ window.onload = function() {
                 loadingBar.style.width = '0%';  // 隐藏加载条
             }, 500);  // 延迟 500ms 后隐藏
         };
+        
