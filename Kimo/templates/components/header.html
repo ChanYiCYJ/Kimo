@@ -1,25 +1,55 @@
-<!-- Header -->
-<header class="bg-white border-b   p-3">
-    <div class="max-w-6xl mx-auto px-4 py-10">
-        <h1 class="text-4xl font-bold mb-2">{{ page_title }}</h1>
-        {% if page_subtitle %}
-        <p class="text-gray-500">{{ page_subtitle }}</p>
-        {% endif %}
+<header
+  class="sticky top-0 z-30
+         bg-white/80 backdrop-blur
+         border-b border-gray-200"
+>
+  <div
+    class="max-w-6xl mx-auto px-4
+           h-14
+           flex items-center justify-between"
+  >
+    <!-- Left: Page Info -->
+    <div class="flex items-center gap-3 min-w-0">
+        {% if article %} <a class="text-gray-500 text-sm hover:text-blue-500" href="/"> ← 返回首页 </a> {% endif %}
+      <h1
+        class="text-base font-medium text-gray-900 truncate"
+      >
+        {{ page_title }}
+      </h1>
+
+      {% if page_subtitle %}
+      <span class="hidden sm:inline text-sm text-gray-400 truncate">
+        {{ page_subtitle }}
+      </span>
+      {% endif %}
     </div>
 
+    <!-- Right: Nav -->
+    <nav class="flex items-center gap-4 text-sm text-gray-500">
+      {% if article %}
+      <a
+        href="/"
+        class="hover:text-gray-900 transition"
+      >
+        首页
+      </a>
+      {% endif %}
 
-    <!-- Nav -->
-    <nav class="border-t">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-end gap-6 text-sm">
-            {% if article %}
-            <a class="text-gray-500  hover:text-blue-500" href="/">
-                ← 返回首页
-            </a>
-            {% endif %}
-            <a class="hover:text-blue-500" href="/about">关于</a>
-            {% if dashboard %}
-            <a class="hover:text-blue-500" href="/dashboard">Dashboard</a>
-            {% endif %}
-        </div>
+      <a
+        href="/about"
+        class="hover:text-gray-900 transition"
+      >
+        关于
+      </a>
+
+      {% if dashboard %}
+      <a
+        href="/dashboard"
+        class="hover:text-gray-900 transition"
+      >
+        Dashboard
+      </a>
+      {% endif %}
     </nav>
+  </div>
 </header>

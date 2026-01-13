@@ -1,0 +1,149 @@
+{% extends "layout.html" %}
+
+{% block header %}
+<header class="sticky top-0 z-30 bg-white/80 backdrop-blur
+               border-b border-gray-100">
+  <div class="mx-auto max-w-6xl px-6 h-14
+              flex items-center justify-between">
+
+    <!-- 左 -->
+    <div class="flex items-center gap-2 text-sm text-gray-700">
+      <span class="opacity-70">📄</span>
+      <span class="font-medium">文章</span>
+    </div>
+
+   
+
+  </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen rounded-xl bg-white">
+
+  <main class="mx-auto max-w-6xl px-6 py-6">
+
+    <!-- 筛选 -->
+    <div class="flex items-center gap-3 text-sm mb-5">
+      <button class="px-3 py-1.5 rounded-full
+                     bg-gray-900 text-white">
+        全部
+      </button>
+    
+    </div>
+
+
+    <!-- 列表 -->
+    <section class="space-y-3">
+
+      {% if post %}
+        {% for article in post %}
+        <article
+          class="group bg-white
+                 rounded-3xl px-6 py-5
+                 border border-gray-100
+                 hover:border-gray-200
+                 hover:bg-gray-50
+                 transition"
+        >
+
+          <div class="flex items-start justify-between gap-6">
+
+            <!-- 左 -->
+            <div class="min-w-0 space-y-1.5">
+              <h2 class="text-base font-semibold text-gray-900 truncate">
+                {{ article.title }}
+              </h2>
+
+              {% if article.description %}
+              <p class="text-sm text-gray-500 leading-relaxed line-clamp-2">
+                {{ article.description }}
+              </p>
+              {% endif %}
+
+              <div class="flex items-center gap-2 text-xs text-gray-400 pt-1">
+                {% if article.category_name %}
+                <span>{{ article.category_name }}</span>
+                <span class="opacity-40">·</span>
+                {% endif %}
+                <span>{{ article.created }}</span>
+              </div>
+            </div>
+
+            <!-- 右操作 -->
+            <div
+              class="flex items-center gap-2 text-sm
+                     opacity-0 group-hover:opacity-100
+                     transition"
+            >
+              <a
+                href="/editor/{{ article.id }}"
+                class=" px-3 py-1.5 rounded-full
+                       text-gray-600
+                       hover:bg-gray-200/60"
+              >
+                编辑
+              </a>
+              <button
+                data-id="{{ article.id }}"
+                class="delete-btn px-3 py-1.5 rounded-full
+                       text-red-500
+                       hover:bg-red-100/60"
+              >
+                删除
+              </button>
+            </div>
+
+          </div>
+        </article>
+        {% endfor %}
+      {% else %}
+        <div class="py-24 text-center text-sm text-gray-400">
+          还没有文章，点击右上角「新建」开始写作 ✍️
+        </div>
+      {% endif %}
+
+    </section>
+
+  </main>
+</div>
+{% endblock %}
+{% block footer %}
+{% endblock %}
+{% block script %}
+<script>
+document.addEventListener('click', function (e) {
+  const btn = e.target.closest('.delete-btn');
+  if (!btn) return;
+
+  const post_id = btn.dataset.id;
+  console.log(post_id)
+  if (!post_id) return;
+
+  if (!confirm('确定要删除这篇文章吗？')) return;
+
+  fetch('/article/delete', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ post_id })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status) {
+      location.reload();
+      
+    } else {
+      alert(data.message || '删除失败');
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    alert('请求失败');
+  });
+});
+</script>
+
+
+{% endblock %}

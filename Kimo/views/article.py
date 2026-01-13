@@ -84,16 +84,14 @@ def edit_article(post_id):
 
 
 
-@bg.route('/delete', methods=['POST'])
+@bg.route('/article/delete', methods=['POST'])
 def article_delete():
-    check_user = session.get('user_role')
-    if check_user == 0:
         post_id = request.json.get('post_id')
         result = Article.delete_article(post_id)
         if not result['status']:
             return jsonify({'message': result['msg']}),500
         return jsonify({'message': result['msg']})       
-    return '无权访问', 400
+ 
 
 @bg.route('/upload/image',methods=['POST'])
 def upload_image():
@@ -108,3 +106,9 @@ def upload_image_by_vditor():
             file =request.files.get('file')
             result=Article.upload_image_by_vditor(file)
             return result 
+        
+@bg.route('/dashboard/article/manage',methods=['GET'])
+def article_manage():
+    if request.method =='GET':
+     article_all = Article.get_all_articles()
+     return render_template("article_manage.html",post=article_all)
