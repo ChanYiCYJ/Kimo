@@ -16,39 +16,46 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    /* ===== 全局 Loading ===== */
-    #global-loading {
-      opacity: 1;
-      transition: opacity 0.6s ease;
+    /* ===== Loading：只做 opacity（不卡） ===== */
+    @keyframes loadingFadeOut {
+      to { opacity: 0; }
     }
-    #global-loading.hidden {
-      opacity: 0;
+    #global-loading.fade-out {
+      animation: loadingFadeOut 0.6s ease forwards;
       pointer-events: none;
     }
 
-    /* ===== Blur-up（只负责清晰度） ===== */
+    /* ===== Blur-up：轻量版 ===== */
     .blur-up {
-      filter: blur(24px);
-      transform: scale(1.08);
-      transition: filter 1s ease, transform 1s ease;
+      filter: blur(10px);
+      transform: scale(1.03);
+      transition: filter 0.8s ease, transform 0.8s ease;
       will-change: filter, transform;
     }
     .blur-up.loaded {
       filter: blur(0);
       transform: scale(1);
     }
+
+    /* ===== 移动端性能优化 ===== */
+    @media (max-width: 768px) {
+      .no-mobile-blur {
+        backdrop-filter: none !important;
+        background-color: rgba(255,255,255,0.85);
+      }
+    }
   </style>
 </head>
 
 <body class="bg-gray-100 text-gray-800">
 
-<!-- ===== 全局 Loading ===== -->
+<!-- ===== Loading ===== -->
 <div id="global-loading"
      class="fixed inset-0 z-[9999] flex items-center justify-center bg-white">
-  <div class="w-10 h-10 border-4 border-gray-300 border-t-gray-700 rounded-full animate-spin"></div>
+  <div class="w-8 h-8 border-4 border-gray-300 border-t-gray-700 rounded-full animate-spin"></div>
 </div>
 
-<!-- ===== 背景图（blur-up） ===== -->
+<!-- ===== 背景图 ===== -->
 <div
   id="bg-image"
   class="fixed inset-0 -z-20
@@ -56,8 +63,8 @@
          bg-cover bg-center blur-up">
 </div>
 
-<!-- ===== 背景遮罩（永远存在） ===== -->
-<div class="fixed inset-0 -z-10 bg-white/70 backdrop-blur"></div>
+<!-- ===== 背景遮罩（桌面模糊 / 移动纯色） ===== -->
+<div class="fixed inset-0 -z-10 bg-white/70 backdrop-blur no-mobile-blur"></div>
 
 {% block header %}
   {% include "components/header.html" %}
@@ -71,13 +78,9 @@
     </div>
 
     <div class="col-span-1 space-y-6">
-
-      <!-- ↓↓↓ 以下完全保持你的结构 ↓↓↓ -->
-      {% block footer %}  
+      {% block footer %}
       <div class="items-center justify-between">
-        <h2 class="text-sm font-medium text-gray-800">
-          最近文章
-        </h2>
+        <h2 class="text-sm font-medium text-gray-800">更多</h2>
       </div>
 
       <div class="bg-white/80 backdrop-blur rounded-xl shadow-sm p-6">
@@ -111,6 +114,7 @@
       </div>
       {% endblock %}
     </div>
+
   </div>
 </main>
 
@@ -118,31 +122,20 @@
 
 <!-- ===== JS ===== -->
 <script>
-  /* Loading：确保动画一定触发 */
+  /* Loading */
   window.addEventListener("load", () => {
     const loader = document.getElementById("global-loading");
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        loader.classList.add("hidden");
-      });
-    });
-
-    setTimeout(() => loader.remove(), 700);
+    loader.classList.add("fade-out");
+    setTimeout(() => loader.remove(), 600);
   });
 
-  /* Blur-up 背景图 */
-  function blurUp(el) {
-    const bg = getComputedStyle(el).backgroundImage;
-    const url = bg.slice(5, -2);
-
-    const img = new Image();
-    img.src = url;
-    img.onload = () => el.classList.add("loaded");
-  }
-
+  /* Blur-up 背景 */
   document.addEventListener("DOMContentLoaded", () => {
-    blurUp(document.getElementById("bg-image"));
+    const el = document.getElementById("bg-image");
+    const bg = getComputedStyle(el).backgroundImage.slice(5, -2);
+    const img = new Image();
+    img.src = bg;
+    img.onload = () => el.classList.add("loaded");
   });
 </script>
 
