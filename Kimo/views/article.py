@@ -108,7 +108,7 @@ def upload_image_by_vditor():
             return result 
         
 @bg.route('/dashboard/article/manage',methods=['GET'])
-def article_manage():
+def manage():
     if request.method =='GET':
      article_all = Article.get_all_articles()
      return render_template("article_manage.html",post=article_all)

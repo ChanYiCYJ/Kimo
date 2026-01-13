@@ -10,14 +10,27 @@
 
   <!-- Vditor -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vditor/dist/index.css">
+<style>
+    /* ===== Loading：只做 opacity（不卡） ===== */
+    @keyframes loadingFadeOut {
+      to { opacity: 0; }
+    }
+    #global-loading.fade-out {
+      animation: loadingFadeOut 0.6s ease forwards;
+      pointer-events: none;
+    }
 
-  <style>
+    
     /* 整个编辑器像一个卡片 */ .vditor { border-radius: 0.75rem; border: 1px solid #e5e7eb; overflow: hidden; background: #fff; } /* 工具栏整体：不要紧凑 */ .vditor-toolbar { background-color: #f9fafb; border-bottom: 1px solid #e5e7eb; padding: 5px; /* ⬅️ 比之前更松 */ gap: 28px; /* ⬅️ 按钮之间拉开 */ } /* 工具栏按钮 */ .vditor-toolbar button { border-radius: 0.75rem; /* 更圆一点 */ padding: 10px 12px; /* ⬅️ 不紧凑的关键 */ display: flex; align-items: center; justify-content: center; } /* 图标放大（关键） */ .vditor-toolbar button svg { width: 30px; /* 原来大概 16 */ height: 30px; } /* 工具栏按钮 tooltip 显示在下方 */ /* 自定义 tooltip（下方） */ .vditor-toolbar button[data-tooltip] { position: relative; } .vditor-toolbar button[data-tooltip]::after { content: attr(data-tooltip); position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(8px); background: #111827; /* gray-900 */ color: #fff; font-size: 12px; padding: 4px 8px; border-radius: 6px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s ease; z-index: 50; } .vditor-toolbar button[data-tooltip]:hover::after { opacity: 1; } /* hover 效果 */ .vditor-toolbar button:hover { background-color: #e5e7eb; } /* 当前激活状态 */ .vditor-toolbar button.vditor-toolbar__item--current { background-color: #dbeafe; } /* 分割线 */ .vditor-toolbar__divider { background-color: #e5e7eb; width: 1px; margin: 0 8px; }
   </style>
 </head>
 
 <body class="bg-gray-100">
-
+<!-- ===== Loading ===== -->
+<div id="global-loading"
+     class="fixed inset-0 z-[9999] flex items-center justify-center bg-white">
+  <div class="w-8 h-8 border-4 border-gray-300 border-t-gray-700 rounded-full animate-spin"></div>
+</div>
 <header
   class="sticky top-0 z-30
          bg-white/80 backdrop-blur
@@ -410,7 +423,24 @@ input.addEventListener("change", async () => {
   }
 });
 </script>
+<!-- ===== JS ===== -->
+<script>
+  /* Loading */
+  window.addEventListener("load", () => {
+    const loader = document.getElementById("global-loading");
+    loader.classList.add("fade-out");
+    setTimeout(() => loader.remove(), 600);
+  });
 
+  /* Blur-up 背景 */
+  document.addEventListener("DOMContentLoaded", () => {
+    const el = document.getElementById("bg-image");
+    const bg = getComputedStyle(el).backgroundImage.slice(5, -2);
+    const img = new Image();
+    img.src = bg;
+    img.onload = () => el.classList.add("loaded");
+  });
+</script>
 
 </body>
 </html>
