@@ -7,14 +7,27 @@ bg=Blueprint('article',__name__)
 @bg.route('/',methods=['GET','POST'])
 def index():
     category_all = Article.get_all_categories()
-    article_all = Article.get_all_articles()
+    articles = Article.get_articles_lists(page=1)['articles']
     tag_all = Article.get_all_tags()
     config =load_config('app','config')
     if request.method=='GET':
         return render_template('index.html', page_title=config["title"],
-                               page_subtitle=config["introduction"], config=config, posts=article_all,categorys=category_all,tags=tag_all)
+                               page_subtitle=config["introduction"], config=config, posts=articles,categorys=category_all,tags=tag_all)
 
     return article_all
+
+@bg.route('/test',methods=['GET'])
+def index_test():
+    page= request.args.get("page", 1, type=int)
+    category_all = Article.get_all_categories()
+    tag_all = Article.get_all_tags()
+    config =load_config('app','config')
+    result =Article.get_articles_lists(page)
+    articles =result['articles']
+    print(articles)
+    total_articles =result['total_page']
+    return render_template('index_test.html', page_title=config["title"],
+                               page_subtitle=config["introduction"], config=config, posts=articles,totalArticles=total_articles,categorys=category_all,tags=tag_all)
 
 @bg.route('/article/<int:article_id>',methods=['GET','POST'])
 def article(article_id):

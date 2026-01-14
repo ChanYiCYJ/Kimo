@@ -118,41 +118,60 @@
     placeholder="文章简介（无填写则选取开头）" 
     id="descrInput">
     <!-- 封面上传区 -->
-    <section
-      class="group relative rounded-2xl border-2 border-dashed border-gray-200
-             p-6 text-center space-y-4
-             transition
-             hover:border-black/40 hover:bg-gray-50"
-    >
-      <p class="text-sm text-gray-500 tracking-wide">
-        设置封面图片
-      </p>
+<section
+  class="group relative rounded-2xl border-2 border-dashed border-gray-200
+         p-6 text-center space-y-5
+         transition
+         hover:border-black/40 hover:bg-gray-50"
+>
+  <p class="text-sm text-gray-500 tracking-wide">
+    设置封面图片
+  </p>
 
-      <!-- 选择图片 -->
-      <label
-        class="inline-flex items-center justify-center
-               gap-2 cursor-pointer
-               bg-black text-white
-               px-5 py-2.5 rounded-xl
-               text-sm font-medium
-               transition
-               hover:bg-gray-800
-               active:scale-95"
-      >
-        选择图片
-        <input
-          id="coverInput"
-          type="file"
-          hidden
-          accept="image/*"
-        />
-      </label>
+  <!-- 上传图片 -->
+  <label
+    class="inline-flex items-center justify-center
+           gap-2 cursor-pointer
+           bg-black text-white
+           px-5 py-2.5 rounded-xl
+           text-sm font-medium
+           transition
+           hover:bg-gray-800
+           active:scale-95"
+  >
+    选择本地图片
+    <input
+      id="coverInput"
+      type="file"
+      hidden
+      accept="image/*"
+    />
+  </label>
 
-      <!-- 预览图 -->
-      <img
-        id="coverPreview"
-        class="hidden mx-auto max-h-48 rounded-xl shadow-md transition"
-      />
+  <!-- 分割线 -->
+  <div class="flex items-center gap-3 text-xs text-gray-400">
+    <span class="flex-1 h-px bg-gray-200"></span>
+    或使用图片 URL
+    <span class="flex-1 h-px bg-gray-200"></span>
+  </div>
+
+  <!-- URL 输入 -->
+  <input
+    id="coverUrlInput"
+    type="url"
+    placeholder="https://example.com/cover.jpg"
+    class="w-full max-w-md mx-auto
+           rounded-xl border border-gray-200
+           px-4 py-2.5 text-sm
+           focus:outline-none focus:ring-2 focus:ring-black/20"
+  />
+
+  <!-- 预览图 -->
+  <img
+    id="coverPreview"
+    class="hidden mx-auto max-h-48 rounded-xl shadow-md transition"
+  />
+</section>
 
       <!-- 删除按钮（弱化） -->
       <button
@@ -389,40 +408,67 @@ if (res.ok) {
     });
 </script>
 <script>
-let coveUrl;
-const input = document.getElementById("coverInput");
+const fileInput = document.getElementById("coverInput");
+const urlInput = document.getElementById("coverUrlInput");
 const preview = document.getElementById("coverPreview");
 
-let coverUrl = null; // 最终用于提交文章
+let coverUrl = null; // 最终提交用
 
-input.addEventListener("change", async () => {
-  const file = input.files[0];
+/* ===== 本地图片 ===== */
+fileInput.addEventListener("change", async () => {
+  const file = fileInput.files[0];
   if (!file) return;
 
-  // 1️⃣ 本地预览（用户体验）
+  // 1️⃣ 预览
   preview.src = URL.createObjectURL(file);
   preview.classList.remove("hidden");
 
-  // 2️⃣ 组装 FormData
+  // 2️⃣ 清空 URL 输入
+  urlInput.value = "";
+
+  // 3️⃣ 上传
   const formData = new FormData();
   formData.append("file", file);
 
-  // 3️⃣ 上传
-  const res = await fetch("/upload/image", {
-    method: "POST",
-    body: formData
-  });
+  try {
+    const res = await fetch("/upload/image", {
+      method: "POST",
+      body: formData
+    });
 
-  const image_data = await res.json();
-  if (image_data.status) {
-    coverUrl = image_data.url;
-    console.log("上传成功：", coverUrl);
+    const data = await res.json();
+    if (!data.status) throw new Error(data.msg);
 
-  } else {
-    alert(image_data.msg || "上传失败");
+    coverUrl = data.url;
+    console.log("封面上传成功:", coverUrl);
+
+  } catch (err) {
+    alert(err.message || "封面上传失败");
+    coverUrl = null;
   }
 });
+
+/* ===== 图片 URL ===== */
+urlInput.addEventListener("input", () => {
+  const url = urlInput.value.trim();
+  if (!url) {
+    preview.classList.add("hidden");
+    coverUrl = null;
+    return;
+  }
+
+  // 1️⃣ 预览
+  preview.src = url;
+  preview.classList.remove("hidden");
+
+  // 2️⃣ 清空文件
+  fileInput.value = "";
+
+  // 3️⃣ 设置最终封面
+  coverUrl = url;
+});
 </script>
+
 <!-- ===== JS ===== -->
 <script>
   /* Loading */

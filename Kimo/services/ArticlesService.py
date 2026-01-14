@@ -3,6 +3,7 @@ import markdown
 from utils import pinyin
 from bs4 import BeautifulSoup as bs
 from utils import upload
+import math
 def get_all_articles():
     return articles.get_all_articles()
 
@@ -45,6 +46,17 @@ def get_article_page(article_id):
         "content" :content,
         "created" : result['created'],
         "category_name":category_name,
+    }
+
+def get_articles_lists(page):
+    perpage = 5
+    offset = (page - 1) * perpage
+    result = articles.get_articles_lists(limit=perpage, offset=offset)
+    all_articles_length = articles.get_all_articles_count()['COUNT(*)']
+    total_page = math.ceil(all_articles_length / perpage)
+    return {
+        "articles": result,
+        "total_page": total_page
     }
 
 def send_article(title, content, category_name, description, cover_image):
