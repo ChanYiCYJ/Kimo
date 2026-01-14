@@ -20,9 +20,8 @@
       pointer-events: none;
     }
 
-    
-    /* 整个编辑器像一个卡片 */ .vditor { border-radius: 0.75rem; border: 1px solid #e5e7eb; overflow: hidden; background: #fff; } /* 工具栏整体：不要紧凑 */ .vditor-toolbar { background-color: #f9fafb; border-bottom: 1px solid #e5e7eb; padding: 5px; /* ⬅️ 比之前更松 */ gap: 28px; /* ⬅️ 按钮之间拉开 */ } /* 工具栏按钮 */ .vditor-toolbar button { border-radius: 0.75rem; /* 更圆一点 */ padding: 10px 12px; /* ⬅️ 不紧凑的关键 */ display: flex; align-items: center; justify-content: center; } /* 图标放大（关键） */ .vditor-toolbar button svg { width: 30px; /* 原来大概 16 */ height: 30px; } /* 工具栏按钮 tooltip 显示在下方 */ /* 自定义 tooltip（下方） */ .vditor-toolbar button[data-tooltip] { position: relative; } .vditor-toolbar button[data-tooltip]::after { content: attr(data-tooltip); position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(8px); background: #111827; /* gray-900 */ color: #fff; font-size: 12px; padding: 4px 8px; border-radius: 6px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s ease; z-index: 50; } .vditor-toolbar button[data-tooltip]:hover::after { opacity: 1; } /* hover 效果 */ .vditor-toolbar button:hover { background-color: #e5e7eb; } /* 当前激活状态 */ .vditor-toolbar button.vditor-toolbar__item--current { background-color: #dbeafe; } /* 分割线 */ .vditor-toolbar__divider { background-color: #e5e7eb; width: 1px; margin: 0 8px; }
-  </style>
+     /* 整个编辑器像一个卡片 */ .vditor { border-radius: 0.75rem; border: 1px solid #e5e7eb; overflow: hidden; background: #fff; } /* 工具栏整体：不要紧凑 */ .vditor-toolbar { background-color: #f9fafb; border-bottom: 1px solid #e5e7eb; padding: 5px; /* ⬅️ 比之前更松 */ gap: 28px; /* ⬅️ 按钮之间拉开 */ } /* 工具栏按钮 */ .vditor-toolbar button { border-radius: 0.75rem; /* 更圆一点 */ padding: 10px 12px; /* ⬅️ 不紧凑的关键 */ display: flex; align-items: center; justify-content: center; } /* 图标放大（关键） */ .vditor-toolbar button svg { width: 30px; /* 原来大概 16 */ height: 30px; } /* 工具栏按钮 tooltip 显示在下方 */ /* 自定义 tooltip（下方） */ .vditor-toolbar button[data-tooltip] { position: relative; } .vditor-toolbar button[data-tooltip]::after { content: attr(data-tooltip); position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(8px); background: #111827; /* gray-900 */ color: #fff; font-size: 12px; padding: 4px 8px; border-radius: 6px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s ease; z-index: 50; } .vditor-toolbar button[data-tooltip]:hover::after { opacity: 1; } /* hover 效果 */ .vditor-toolbar button:hover { background-color: #e5e7eb; } /* 当前激活状态 */ .vditor-toolbar button.vditor-toolbar__item--current { background-color: #dbeafe; } /* 分割线 */ .vditor-toolbar__divider { background-color: #e5e7eb; width: 1px; margin: 0 8px; }
+    </style>
 </head>
 
 <body class="bg-gray-100">
@@ -69,7 +68,15 @@
         >
           保存草稿
         </button>
-
+        {% if post %}
+      <button id="editBtn"
+       class="px-5 py-2 rounded-xl
+                 text-sm font-semibold
+                 bg-black text-white
+                 hover:bg-gray-900
+                 active:scale-[0.98]
+                 transition">编辑</button>
+        {% else %}
         <!-- 发布 -->
         <button
           id="sendBtn"
@@ -82,7 +89,7 @@
         >
           发布
         </button>
-
+        {% endif %}
       </div>
 
     </div>
@@ -107,9 +114,7 @@
   <div class="flex justify-start gap-3 ">
     
    
-      {% if edit %}
-      <button class="px-7 py-2 rounded-xl bg-black text-white">编辑</button>
-      {% endif %}
+      
   </div>
         <aside class="space-y-6 mb-2">
   <div class="bg-white rounded-2xl mb-4 shadow-sm border border-gray-100 p-4">
@@ -130,6 +135,7 @@
 
   <!-- 上传图片 -->
   <label
+    id="imageInput"
     class="inline-flex items-center justify-center
            gap-2 cursor-pointer
            bg-black text-white
@@ -171,9 +177,7 @@
     id="coverPreview"
     class="hidden mx-auto max-h-48 rounded-xl shadow-md transition"
   />
-</section>
-
-      <!-- 删除按钮（弱化） -->
+  <!-- 删除按钮（弱化） -->
       <button
         id="deleteCoverButton"
         class="text-sm text-gray-500
@@ -183,6 +187,9 @@
       >
         删除图片
       </button>
+</section>
+
+      
 
     </section>
     
@@ -213,6 +220,7 @@
             type="checkbox"
             id="CategoryConditions"
             class="peer sr-only"
+            
           />
 
           <!-- Track -->
@@ -285,8 +293,10 @@
     </section>
   </div>
 </aside>
-
-    </div>
+{% if post %}
+<div id="data-container" data-info='{{ post | tojson | safe }}'></div>
+{% endif %}
+</div>
     </div>
 </main>
 <!-- Modal -->
@@ -325,7 +335,39 @@ function closeModal() {
 
 <!-- Vditor JS -->
 <script src="https://cdn.jsdelivr.net/npm/vditor/dist/index.min.js"></script>
+{% if post %}
+<script>
+  
+  const container = document.getElementById('data-container');
+// dataset 会自动处理 JSON 字符串
+  const POST_DATA = JSON.parse(container.dataset.info);
+  if (POST_DATA){
+    document.getElementById('titleInput').value = POST_DATA.title || '';
+    document.getElementById('descrInput').value = POST_DATA.description || '';
 
+    if (POST_DATA.cover_url) {
+      coverUrl = POST_DATA.cover_url;
+      const img = document.getElementById('coverPreview');
+      img.src = coverUrl;
+      img.classList.remove('hidden');
+      
+      document.getElementById('imageInput').classList.add('hidden')
+      document.getElementById('coverUrlInput').classList.add('hidden')
+      document.getElementById('deleteCoverButton').classList.remove('hidden');
+    }
+
+    if (POST_DATA.category_id) {
+      // 获取 input 元素
+      const checkbox = document.getElementById('CategoryConditions');
+      // 设置为开启
+      checkbox.checked = true;
+      document.getElementById('CategoryList').classList.remove('hidden');
+      document.getElementById('Headline').value = POST_DATA.category_name;
+    }
+  };
+  
+</script>
+{% endif %}
 <script>
   const vditor = new Vditor('vditor', {
       height: 420,
@@ -356,11 +398,11 @@ function closeModal() {
     enable: false,
      },
     after() {
-    if ('{{ postId }}'){
-    let article = `{{ article }}`;
-    console.log(article);
-    vditor.setValue(article);
-  }
+    {% if post %}
+    if (POST_DATA){
+      vditor.setValue(POST_DATA.content || '');
+    }
+    {% endif %}
   },
     });
 
@@ -406,6 +448,50 @@ if (res.ok) {
   showModal(data.message || '发布失败');
 }
     });
+</script>
+<script>
+  document.getElementById('sendBtn').addEventListener('click', async () => {
+      const title = document.getElementById('titleInput').value.trim();
+      const content = vditor.getValue().trim();
+      const description = document.getElementById('descrInput').value.trim();
+      const description_result = description.trim() === '' ? null : description.trim();
+      const categoryToggle = document.getElementById('CategoryConditions').checked
+      if (!title) {
+        showModal('标题不能为空');
+        return;
+      }
+      if (!content) {
+        showModal('内容不能为空');
+        return;
+      }
+      if (!categoryToggle) {
+        category_name = null;
+      }
+      else{
+        category_name = document.getElementById('Headline').value;
+      }
+ const res = await fetch('/post', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ title, content ,category_name,description_result,coverUrl})
+});
+
+const data = await res.json();
+
+if (res.ok) {
+  showModal('发布成功');
+  vditor.setValue('');
+
+  setTimeout(() => {
+    window.location.href = '/';
+  }, 800);
+} else {
+  showModal(data.message || '发布失败');
+}
+    });
+
 </script>
 <script>
 const fileInput = document.getElementById("coverInput");
@@ -468,8 +554,16 @@ urlInput.addEventListener("input", () => {
   coverUrl = url;
 });
 </script>
+<!-- ===== 设置删除封面按钮事件 ===== -->
+<script>
+  document.getElementById('deleteCoverButton').addEventListener('click', async () => {
+     document.getElementById('imageInput').classList.remove('hidden')
+      document.getElementById('coverUrlInput').classList.remove('hidden')
+      document.getElementById('deleteCoverButton').classList.add('hidden');
+      document.getElementById('coverPreview').classList.add('hidden');
+  });
+</script>
 
-<!-- ===== JS ===== -->
 <script>
   /* Loading */
   window.addEventListener("load", () => {

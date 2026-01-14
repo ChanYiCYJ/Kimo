@@ -98,9 +98,22 @@ def editor():
 @bg.route('/editor/<int:post_id>', methods=['GET', 'POST'])
 def edit_article(post_id):
     print(post_id)
+    categories = Article.get_all_categories()
+    tag = Article.get_all_tags()
     result = Article.edit_article(post_id)
+    ca_id= result['category_id']
+    ca_name= Article.get_category_name_by_id(ca_id)
     print(result)
-    return render_template('post.html', postId=result['id'], article=result['content'])
+    post = {
+    'title': result['title'],
+    'content': result['content'],
+    'category_name': ca_name,
+    'category_id': ca_id,
+    'cover_url': result['cover_image'],
+}
+    print(post)
+    print(post)
+    return render_template('post.html', post=post,categories=categories, tags=tag)
 
 
 
