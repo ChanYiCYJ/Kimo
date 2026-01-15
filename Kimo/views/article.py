@@ -21,21 +21,6 @@ def index():
 
     return articles
 
-@bg.route('/test',methods=['GET'])
-def index_test():
-    page= request.args.get("page", 1, type=int)
-    category_all = Article.get_all_categories()
-    tag_all = Article.get_all_tags()
-    config =load_config('app','config')
-    result =Article.get_articles_lists(page)
-    page_id=result['page_id']+1
-    print(page_id)
-    articles =result['articles']
-    print(articles)
-    total_articles =result['total_page']
-    return render_template('index_test.html', page_title=config["title"],
-                               page_subtitle=config["introduction"], config=config,pageId=page_id,posts=articles,totalArticles=total_articles,categorys=category_all,tags=tag_all)
-
 @bg.route('/article/<int:article_id>',methods=['GET','POST'])
 def article(article_id):
 
