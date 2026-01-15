@@ -1,64 +1,83 @@
 # utils/migrate.py
 import os
 
-from utils.db import get_db_connection,implement,fetch_one,hash_password
-
+from utils.db import get_db_connection,implement,fetch_one
+from utils.hash import hash_password
 TABLES_SQL = [
-    """
-    CREATE TABLE  IF NOT EXISTS `userinfo` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `email` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `user_name` varchar(255) DEFAULT NULL,
-  `role` tinyint NOT NULL DEFAULT '1',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `userInfo_unique` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-    """,
 
-    """
-    CREATE TABLE  IF NOT EXISTS `article_tags` (
-  `article_id` int unsigned NOT NULL,
-  `tag_id` int unsigned NOT NULL,
-  PRIMARY KEY (`article_id`,`tag_id`),
-  KEY `tag_id` (`tag_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-    """,
-
-    """
-   CREATE TABLE IF NOT EXISTS `articles`  (
-  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `title` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `category_id` int NULL DEFAULT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL,
-  UNIQUE INDEX `blog_unique`(`id` ASC) USING BTREE,
-  INDEX `fk_archives_category`(`category_id` ASC) USING BTREE,
-  CONSTRAINT `fk_archives_category` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
-    """,
-
-    """
-    CREATE TABLE IF NOT EXISTS `categories` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `slug` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `description` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `slug` (`slug`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-    """,
-
+# 1️⃣ 分类表
 """
-CREATE TABLE  IF NOT EXISTS `tags` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `tagName` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  UNIQUE KEY `tag_unique` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE IF NOT EXISTS categories (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  name VARCHAR(50) NOT NULL,
+  slug VARCHAR(50) NOT NULL,
+  description VARCHAR(200),
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_slug (slug)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+""",
+
+# 2️⃣ 用户表
+"""
+CREATE TABLE IF NOT EXISTS userInfo (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  email VARCHAR(255) NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  user_name VARCHAR(255),
+  role TINYINT NOT NULL DEFAULT 1,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_email (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+""",
+
+# 3️⃣ 标签表
+"""
+CREATE TABLE IF NOT EXISTS tags (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  tag_name VARCHAR(50) NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_tag_name (tag_name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+""",
+
+# 4️⃣ 文章表
+"""
+CREATE TABLE IF NOT EXISTS articles (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  title LONGTEXT NOT NULL,
+  content LONGTEXT NOT NULL,
+  category_id INT UNSIGNED DEFAULT NULL,
+  description TEXT,
+  cover_image TEXT,
+  PRIMARY KEY (id),
+  KEY idx_category (category_id),
+  CONSTRAINT fk_articles_category
+    FOREIGN KEY (category_id)
+    REFERENCES categories (id)
+    ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+""",
+
+# 5️⃣ 文章-标签关联表
+"""
+CREATE TABLE IF NOT EXISTS article_tags (
+  article_id INT UNSIGNED NOT NULL,
+  tag_id INT UNSIGNED NOT NULL,
+  PRIMARY KEY (article_id, tag_id),
+  CONSTRAINT fk_at_article
+    FOREIGN KEY (article_id)
+    REFERENCES articles (id)
+    ON DELETE CASCADE,
+  CONSTRAINT fk_at_tag
+    FOREIGN KEY (tag_id)
+    REFERENCES tags (id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 """
 ]
+
 
 
 def init_db():
@@ -81,15 +100,16 @@ def init_db():
         conn.close()
 
 def create_admin():
-    # 1️⃣ 先测试数据库是否可用
-    if not get_db_connection():
-        print("❌ 数据库未配置或无法连接")
-        return
-
     try:
+        # 1️⃣ 测试数据库连接
+        conn = get_db_connection()
+        if not conn:
+            print("❌ 数据库未配置或无法连接")
+            return
+
         # 2️⃣ 检查 admin 是否存在
         check = fetch_one(
-            "SELECT * FROM userInfo WHERE user_name=%s",
+            "SELECT id FROM userinfo WHERE user_name=%s LIMIT 1",
             ["admin"]
         )
         if check:
@@ -104,18 +124,24 @@ def create_admin():
             print("❌ 邮箱或密码不能为空")
             return
 
+        # 4️⃣ 密码加密
         hash_pwd = hash_password(password)
 
-        # 4️⃣ 创建管理员
+        # 5️⃣ 创建管理员（role=0 表示管理员）
         ok = implement(
-            "INSERT INTO userInfo(email,password,user_name,role) VALUES(%s,%s,%s,%s)",
+            """
+            INSERT INTO userinfo (email, password, user_name, role)
+            VALUES (%s, %s, %s, %s)
+            """,
             [email, hash_pwd, "admin", 0]
         )
 
         if ok:
             print("✅ 管理员账户创建成功")
         else:
-            print("❌ 创建失败")
+            print("❌ 创建失败（SQL 未影响行数）")
 
     except KeyboardInterrupt:
         print("\n❌ 已取消创建管理员")
+    except Exception as e:
+        print("❌ 创建管理员异常：", e)
