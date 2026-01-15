@@ -3,97 +3,143 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    {% block head %}
-        <title>{{ config.title }}</title>
-    {% endblock %}
-    <!-- Markdown 样式 -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/loading.css') }}">
-          <script src="https://cdn.tailwindcss.com"></script>
+
+  {% block head %}
+    <title>{{ config.title }}</title>
+  {% endblock %}
+
+  <!-- Markdown -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* ===== Loading：只做 opacity（不卡） ===== */
+    @keyframes loadingFadeOut {
+      to { opacity: 0; }
+    }
+    #global-loading.fade-out {
+      animation: loadingFadeOut 0.6s ease forwards;
+      pointer-events: none;
+    }
+
+    /* ===== Blur-up：轻量版 ===== */
+    .blur-up {
+      filter: blur(10px);
+      transform: scale(1.03);
+      transition: filter 0.8s ease, transform 0.8s ease;
+      will-change: filter, transform;
+    }
+    .blur-up.loaded {
+      filter: blur(0);
+      transform: scale(1);
+    }
+
+    /* ===== 移动端性能优化 ===== */
+    @media (max-width: 768px) {
+      .no-mobile-blur {
+        backdrop-filter: none !important;
+        background-color: rgba(255,255,255,0.85);
+      }
+    }
+  </style>
 </head>
 
 <body class="bg-gray-100 text-gray-800">
-    <div
-  class="fixed inset-0 -z-10
-         bg-[url('https://api.1314.cool/bingimg')]
-         bg-cover bg-center
-         scale-110 blur-2xl opacity-30">
+
+<!-- ===== Loading ===== -->
+<div id="global-loading"
+     class="fixed inset-0 z-[9999] flex items-center justify-center bg-white">
+  <div class="w-8 h-8 border-4 border-gray-300 border-t-gray-700 rounded-full animate-spin"></div>
 </div>
 
+<!-- ===== 背景图 ===== -->
+<div
+  id="bg-image"
+  class="fixed inset-0 -z-20
+         bg-[url('https://api.1314.cool/bingimg')]
+         bg-cover bg-center blur-up">
+</div>
 
+<!-- ===== 背景遮罩（桌面模糊 / 移动纯色） ===== -->
+<div class="fixed inset-0 -z-10 bg-white/70 backdrop-blur no-mobile-blur"></div>
 
-    <div id="loading-bar"></div>
-     {% block header %}
-        <!-- Header -->
-        {% include "components/header.html" %}
-     {% endblock %}
-    <main class="max-w-6xl mx-auto px-4 my-10">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="col-span-1 md:col-span-2 space-y-6">
-            {% block content %}{% endblock %}
-        </div>
-        <div class="col-span-1">
-            {% block footer %}
-            <aside class="space-y-6">
-                <div class="bg-white rounded-xl shadow-sm p-6">
-                    <h3 class="font-semibold mb-2">分类</h3>
-                    <section class="w-full overflow-hidden">
-    <div class="flex flex-wrap gap-3 px-4 py-3 overflow-x-auto no-scrollbar scroll-smooth">
-        {% if categorys %}
-        {% for category in categorys %}
-        <button class="flex h-9 shrink-0 items-center justify-center px-5 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 hover:border-primary/50 text-[#111618] dark:text-white transition-all active:scale-95">
-            <span class="text-sm font-medium">{{ category.name }}</span>
-        </button>
-        {% endfor %}
-        {% else %}
-        <div class="text-center text-gray-400 py-1">
-    暂无分类
-    </div>
-    {% endif %}
-    </div>
-            </SECTION>
-                </div>
-            </aside>
-
-            <aside class="space-y-6 mt-5">
-
-
-                <div class="bg-white rounded-xl shadow-sm p-6">
-                    <h3 class="font-semibold mb-2">标签</h3>
-                    <section class="w-full overflow-hidden">
-    <div class="flex flex-wrap gap-3 px-4 py-3 overflow-x-auto no-scrollbar scroll-smooth">
-        {% if tags %}
-        {% for tag in tags %}
-        <button class="flex h-9 shrink-0 items-center justify-center px-5 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 hover:border-primary/50 text-[#111618] dark:text-white transition-all active:scale-95">
-            <span class="text-sm font-medium">{{ tag.tagName }}</span>
-        </button>
-
-        {% endfor %}
-        {% else %}
-        <div class="text-center text-gray-400 py-1">
-    暂无标签
-    </div>
-    {% endif %}
-    </div>
-            </SECTION>
-                </div>
-            </aside>
-            {% endblock %}
-        </div>
-    </div>
-</main>
-{% block other %}
+{% block header %}
+  {% include "components/header.html" %}
 {% endblock %}
 
+<main class="max-w-6xl mx-auto px-4 my-10">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+    <div class="col-span-1 md:col-span-2 space-y-6">
+      {% block content %}{% endblock %}
+    </div>
+
+    <div class="col-span-1 space-y-6">
+      {% block footer %}
+      <div class="items-center justify-between">
+        <h2 class="text-sm font-medium text-gray-800">更多</h2>
+      </div>
+
+      <div class="bg-white/80 backdrop-blur rounded-xl shadow-sm p-6">
+        <h3 class="font-semibold mb-3">分类</h3>
+        {% if categorys %}
+          <div class="flex flex-wrap gap-3">
+            {% for category in categorys %}
+              <span class="px-4 py-1.5 text-sm rounded-full border bg-white">
+                {{ category.name }}
+              </span>
+            {% endfor %}
+          </div>
+        {% else %}
+          <span class="text-gray-400 text-sm">暂无分类</span>
+        {% endif %}
+      </div>
+
+      <div class="bg-white/80 backdrop-blur rounded-xl shadow-sm p-6">
+        <h3 class="font-semibold mb-3">标签</h3>
+        {% if tags %}
+          <div class="flex flex-wrap gap-3">
+            {% for tag in tags %}
+              <span class="px-4 py-1.5 text-sm rounded-full border bg-white">
+                {{ tag.tagName }}
+              </span>
+            {% endfor %}
+          </div>
+        {% else %}
+          <span class="text-gray-400 text-sm">暂无标签</span>
+        {% endif %}
+      </div>
+      {% endblock %}
+    </div>
+
+  </div>
+</main>
+
+{% block other %}{% endblock %}
+
+<!-- ===== JS ===== -->
+<script>
+  /* Loading */
+  window.addEventListener("load", () => {
+    const loader = document.getElementById("global-loading");
+    loader.classList.add("fade-out");
+    setTimeout(() => loader.remove(), 600);
+  });
+
+  /* Blur-up 背景 */
+  document.addEventListener("DOMContentLoaded", () => {
+    const el = document.getElementById("bg-image");
+    const bg = getComputedStyle(el).backgroundImage.slice(5, -2);
+    const img = new Image();
+    img.src = bg;
+    img.onload = () => el.classList.add("loaded");
+  });
+</script>
+
+{% block script %}{% endblock %}
 
 </body>
-    <script>
-    function closeModal() {
-        document.getElementById('modal').style.display = 'none';
-    }
-    </script>
-    <script src="{{ url_for('static', filename='js/loading.js') }}"></script>
-    {% block script %}{% endblock %}
 </html>

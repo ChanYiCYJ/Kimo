@@ -6,15 +6,20 @@ bg=Blueprint('article',__name__)
 
 @bg.route('/',methods=['GET','POST'])
 def index():
+    page= request.args.get("page", 1, type=int)
     category_all = Article.get_all_categories()
-    article_all = Article.get_all_articles()
+    result =Article.get_articles_lists(page)
+    page_id=result['page_id']+1
+    print(page_id)
+    articles =result['articles']
     tag_all = Article.get_all_tags()
+    total_articles =result['total_page']
     config =load_config('app','config')
     if request.method=='GET':
         return render_template('index.html', page_title=config["title"],
-                               page_subtitle=config["introduction"], config=config, posts=article_all,categorys=category_all,tags=tag_all)
+                               page_subtitle=config["introduction"],total_pages=total_articles,pageId=page_id,config=config, posts=articles,categorys=category_all,tags=tag_all)
 
-    return article_all
+    return articles
 
 @bg.route('/article/<int:article_id>',methods=['GET','POST'])
 def article(article_id):
@@ -30,6 +35,8 @@ def article(article_id):
 
 @bg.route('/post', methods=[ 'POST'])
 def article_post():
+    check_user = session.get('user_role')
+    if check_user == 2:
         if request.method == 'POST':
             print('执行post')
             title = request.json.get('title')
@@ -37,15 +44,32 @@ def article_post():
             category_name = request.json.get('category_name')
             description = request.json.get('description')
             cover_image =request.json.get('coverUrl')
+            id= None
             print(content)
             print(title)
             print(category_name)
-            create_page=Article.send_article(title,content,category_name,description,cover_image)
+            create_page=Article.send_article(title,content,category_name,description,cover_image,id)
             if not create_page['status']:
                 return jsonify({'message': create_page['msg']}),500    
             return jsonify({'message': create_page['msg']})
+    return jsonify({'message': '无权'}),500  
 
-
+@bg.route('/articles/update',methods=['POST'])
+def article_update(): 
+    check_user = session.get('user_role')
+    if check_user == 2:
+     if request.method == 'POST':
+        title = request.json.get('title')
+        content = request.json.get('content')
+        category_name = request.json.get('category_name')
+        description = request.json.get('description')
+        cover_image =request.json.get('coverUrl')
+        id= request.json.get('postId')
+        create_page=Article.send_article(title,content,category_name,description,cover_image,id)
+        if not create_page['status']:
+            return jsonify({'message': create_page['msg']}),500    
+        return jsonify({'message': create_page['msg']})
+    return jsonify({'message': '无权'}),500  
 
 @bg.route('/tags', methods=['GET', 'POST'])
 def tags():
@@ -74,37 +98,68 @@ def editor():
             return render_template('post.html', categories=categories, tags=tag)
         return render_template('post.html')
 
-    return '无权访问', 400
+    return redirect(url_for('account.login'))
 @bg.route('/editor/<int:post_id>', methods=['GET', 'POST'])
 def edit_article(post_id):
-    print(post_id)
-    result = Article.edit_article(post_id)
-    print(result)
-    return render_template('post.html', postId=result['id'], article=result['content'])
+    check_user = session.get('user_role')
+    if check_user == 2:
+        print(post_id)
+        categories = Article.get_all_categories()
+        tag = Article.get_all_tags()
+        result = Article.edit_article(post_id)
+        ca_id= result['category_id']
+        ca_name= Article.get_category_name_by_id(ca_id)
+        print(result)
+        post = {
+        'id' :result['id'],
+        'title': result['title'],
+        'content': result['content'],
+        'category_name': ca_name,
+        'category_id': ca_id,
+        'cover_url': result['cover_image'],
+    }
+        print(post)
+        print(post)
+        return render_template('post.html', post=post,categories=categories, tags=tag)
+    return redirect(url_for('account.login'))
 
 
-
-@bg.route('/delete', methods=['POST'])
+@bg.route('/article/delete', methods=['POST'])
 def article_delete():
     check_user = session.get('user_role')
-    if check_user == 0:
+    if check_user == 2:
         post_id = request.json.get('post_id')
         result = Article.delete_article(post_id)
         if not result['status']:
             return jsonify({'message': result['msg']}),500
         return jsonify({'message': result['msg']})       
-    return '无权访问', 400
+    return jsonify({'message': '无权'}),500 
 
 @bg.route('/upload/image',methods=['POST'])
 def upload_image():
+    check_user = session.get('user_role')
+    if check_user == 2:
         if request.method == 'POST':
             file =request.files.get('file')
             result=Article.upload_image(file)
             return jsonify({'status':result['status'],'message':result['msg'],'url':result['url']})
+    return jsonify({'message': '无权'}),500
 
 @bg.route('/upload/image/vditor',methods=['POST'])
 def upload_image_by_vditor():
+    check_user = session.get('user_role')
+    if check_user == 2:
         if request.method == 'POST':
             file =request.files.get('file')
             result=Article.upload_image_by_vditor(file)
             return result 
+    return jsonify({'message': '无权'}),500 
+        
+@bg.route('/dashboard/article/manage',methods=['GET'])
+def manage():
+    check_user = session.get('user_role')
+    if check_user == 2:
+        if request.method =='GET':
+            article_all = Article.get_all_articles()
+            return render_template("article_manage.html",post=article_all)
+    return redirect(url_for('account.login'))

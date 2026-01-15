@@ -3,6 +3,12 @@ from utils import db
 def get_all_articles():
     return db.fetchall('SELECT a.id,a.title,a.content,a.created,a.description,a.cover_image,c.name AS category_name FROM articles a LEFT JOIN categories c ON a.category_id = c.id ORDER BY a.created DESC;')or []
 
+def get_articles_lists(limit, offset):
+    return db.fetchall('SELECT a.id,a.title,a.content,a.created,a.description,a.cover_image,c.name AS category_name FROM articles a LEFT JOIN categories c ON a.category_id = c.id ORDER BY a.created DESC LIMIT %s OFFSET %s;', (limit, offset)) or []
+
+def get_all_articles_count():
+    return db.fetch_one('SELECT COUNT(*) FROM articles;')or []
+
 def get_article_by_title(titile):
     return db.fetch_one('SELECT * FROM articles WHERE title LIKE %s',[titile])or []
 
@@ -11,6 +17,26 @@ def get_article_by_id(id):
 
 def create_article(title,content,category_id,description,cover_image):
     return db.implement('insert into articles(title,content,category_id,description,cover_image) values (%s,%s,%s,%s,%s)', [title, content,category_id,description,cover_image])or []
+
+def update_article(title, content, category_id, description, cover_image, id):
+    sql = """
+        UPDATE articles
+        SET
+            title = %s,
+            content = %s,
+            category_id = %s,
+            description = %s,
+            cover_image = %s
+        WHERE id = %s
+    """
+    return db.implement(sql, [
+        title,
+        content,
+        category_id,
+        description,
+        cover_image,
+        id
+    ]) or []
 
 def delete_article(id):
     return db.implement('delete from articles where id=%s', [id, ])

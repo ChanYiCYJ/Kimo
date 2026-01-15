@@ -2,10 +2,57 @@
 {% block head %}
 <title>{{ article.title }} - {{ config.title }}</title>
 {% endblock %}
+{% block header %}
+<header
+  class="sticky top-0 z-30
+         bg-white/80 backdrop-blur
+         border-b border-gray-200"
+>
+  <div
+    class="max-w-6xl mx-auto px-4
+           h-14
+           flex items-center justify-between"
+  >
+    <!-- Left: Page Info -->
+    <div class="flex items-center ml-3 gap-3 min-w-0">
+        {% if article %} <a class="text-gray-500 text-sm hover:text-blue-500" href="/"> ← 返回首页 </a> {% endif %}
+      
+    </div>
+
+    <!-- Right: Nav -->
+    <nav class="flex items-center gap-4 text-sm text-gray-500 mr-4">
+      
+      <a
+        href="/about"
+        class="hover:text-gray-900 transition"
+      >
+        关于
+      </a>
+
+      {% if dashboard %}
+      <a
+        href="/dashboard"
+        class="hover:text-gray-900 transition"
+      >
+        Dashboard
+      </a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+
+{% endblock %}
 {% block content %}
         <!-- 正文 -->
         <article class="md:col-span-2 bg-white rounded-xl shadow-sm p-6">
-            <div class="markdown-body max-w-none">
+            <h1 class="mt-2 text-3xl mb-2" >{{ article.title }}</h1>
+                <span class="ml-4 mt-2 mb-5 text-sm text-gray-400 truncate">
+        {{ page_subtitle }}
+      </span>
+      <div class="mt-5 border-t border-gray-200 my-2 p-2"></div>
+
+            <div class="mt-2 markdown-body max-w-none">
+                
         {{ content | safe }}
             </div>
         </article>

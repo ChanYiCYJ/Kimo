@@ -3,6 +3,7 @@ import markdown
 from utils import pinyin
 from bs4 import BeautifulSoup as bs
 from utils import upload
+import math
 def get_all_articles():
     return articles.get_all_articles()
 
@@ -47,38 +48,78 @@ def get_article_page(article_id):
         "category_name":category_name,
     }
 
-def send_article(title,content,category_name,description,cover_image):
-    if not (title and content):
+def get_articles_lists(page):
+    perpage = 5
+    page_id=page-1
+    offset = page_id * perpage
+    result = articles.get_articles_lists(limit=perpage, offset=offset)
+    all_articles_length = articles.get_all_articles_count()['COUNT(*)']
+    total_page = math.ceil(all_articles_length / perpage)
+    return {
+        "articles": result,
+        "total_page": total_page,
+        "page_id" : page_id
+    }
+
+def send_article(title, content, category_name, description, cover_image,id):
+    # 1. 基础校验
+    if not title or not content:
         return {
-            "status":False,
-            "msg":'缺少(标题、内容)'
+            "status": False,
+            "msg": "缺少(标题、内容)"
         }
-    print(description)
+
+    # 2. 自动生成摘要
     if not description:
         html = markdown.markdown(content)
-    # 2. HTML → 纯文本
         soup = bs(html, "html.parser")
-        text = soup.get_text()
-        description =text.strip().replace('\n', '')[:20]
-    if not cover_image:
-        cover_image=None
-    if not category_name:
-        category_id = None
+        text = soup.get_text(separator=" ", strip=True)
+        description = text[:20]
+
+    # 3. 封面图兜底
+    cover_image = cover_image or None
+
+    # 4. 分类处理
+  
+    if category_name:
+        category = articles.get_category_id_by_name(category_name)
+
+        if not category:
+        # 不存在 → 创建
+            articles.create_category(
+            category_name,
+            pinyin.translate(category_name)
+        )
+        # 再查一次
+        category = articles.get_category_id_by_name(category_name)
+
+        category_id = category['id']
     else:
-        category_id = articles.get_category_id_by_name(category_name)
-        if not category_id:
-           articles.create_category(category_name,pinyin.translate(category_name))
-    article_result=articles.create_article(title,content,category_id,description,cover_image)
+        category_id = None
+
+    print(id)
+    if not id:
+        # 5. 创建文章
+        article_result = articles.create_article(
+            title,
+            content,
+            category_id,
+            description,
+            cover_image
+        )
+        
+    article_result = articles.update_article(title, content, category_id, description, cover_image, id)
     if not article_result:
-        return{
-                   "status":False,
-                    "msg":'创建文章失败'
-               }
-    return{
-            "status":True,
-            "msg":'创建文章成功'
-               }
-          
+            return {
+                "status": False,
+                "msg": "编辑文章失败"
+            }
+    return {
+            "status": True,
+            "msg": "编辑文章成功",
+            "article_id": article_result
+        }
+
 def edit_article(id):
     return articles.get_article_by_id(id)
 

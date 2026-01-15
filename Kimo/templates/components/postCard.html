@@ -1,56 +1,93 @@
 <article
-  class="group bg-white rounded-2xl shadow-sm overflow-hidden
-         transition hover:shadow-md hover:-translate-y-0.5"
+  class="flex flex-col md:flex-row gap-4 md:gap-6 p-4 sm:p-4 bg-white/80 backdrop-blur
+         rounded-3xl overflow-hidden
+         border border-gray-100
+         transition
+         hover:shadow-sm hover:-translate-y-0.5"
 >
-  <!-- Cover -->
-{% if post.cover_image %}
-<div class="aspect-[16/9] overflow-hidden bg-gray-100">
-  <img
-    src="{{ post.cover_image }}"
-    alt="{{ post.title }}"
-    class="w-full h-full object-cover
-           transition-transform duration-300
-           group-hover:scale-105"
-  />
-</div>
-{% endif %}
+  <!-- 封面 -->
+      {% if post.cover_image %}
+      <div
+        class="w-full
+               md:w-56 md:flex-shrink-0
+               aspect-[16/9]
+               md:aspect-auto
+               md:h-36
+               rounded-2xl overflow-hidden
+               bg-gray-100"
+      >
+        <img
+          src="{{ post.cover_image }}"
+          alt="{{ post.title }}"
+          class="w-full h-full object-cover
+                 transition-transform duration-300
+                 md:group-hover:scale-105"
+        />
+      </div>
+      {% endif %}
 
 
-  <!-- Content -->
-  <div class="flex flex-col gap-3 p-6 h-full">
-    
+  <!-- 内容区 -->
+  <div
+    class="flex flex-col gap-3
+           p-2 sm:p-3
+           h-full"
+  >
+
+    <!-- 分类 -->
     {% if post.category_name %}
-    <!-- Tag / Badge -->
     <span
       class="w-fit inline-flex items-center
-             px-3 py-1 text-xs font-semibold uppercase tracking-wider
-             text-primary bg-primary/15
-             rounded-full border border-primary/20"
-    >{{ post.category_name }}</span>
+             px-2 py-1
+             text-xs font-semibold uppercase tracking-wider
+             text-primary
+             bg-primary/10
+             rounded-full
+             border border-primary/20"
+    >
+      {{ post.category_name }}
+    </span>
     {% endif %}
 
-    <!-- Title -->
-    <h2 class="text-lg font-semibold leading-snug text-gray-900">
+    <!-- 标题 -->
+    <h2
+      class="text-base sm:text-lg
+             font-semibold
+             leading-snug
+             text-gray-900
+             line-clamp-2"
+    >
       {{ post.title }}
     </h2>
 
+    <!-- 描述 -->
     {% if post.description %}
-    <p class="text-sm text-gray-600 leading-relaxed line-clamp-3">
+    <p
+      class="text-sm
+             text-gray-600
+             leading-relaxed
+             line-clamp-3"
+    >
       {{ post.description }}
     </p>
     {% endif %}
 
-    <!-- Action -->
+    <!-- 操作 -->
     <a
       href="/article/{{ post.id }}"
       class="mt-auto inline-flex items-center gap-1
-             text-sm font-medium text-gray-700
-             w-fit px-4 py-2 rounded-full border
+             text-sm font-medium
+             text-gray-700
+             w-fit
+             px-4 py-2
+             rounded-full
+             border border-gray-200
              hover:bg-gray-100 hover:text-gray-900
              transition"
     >
-      Read
+      阅读全文
       <span class="transition group-hover:translate-x-0.5">→</span>
     </a>
+
   </div>
 </article>
