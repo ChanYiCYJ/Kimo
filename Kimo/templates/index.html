@@ -48,7 +48,7 @@
                 transition-all duration-200
                 hover:bg-gray-100 hover:-translate-y-0.5
                 active:translate-y-0">
-        ← 上一页
+        ← 
       </a>
     </li>
     {% endif %}
@@ -58,6 +58,7 @@
     <li>
       <a href="?page={{ p }}"
          class="
+         flex flex-1 overflow-x-auto
            min-w-[2.25rem] text-center
            px-3 py-1.5 rounded-xl border
            transition-all duration-200
@@ -84,7 +85,7 @@
                 transition-all duration-200
                 hover:bg-gray-100 hover:-translate-y-0.5
                 active:translate-y-0">
-        下一页 →
+        →
       </a>
     </li>
     {% endif %}
