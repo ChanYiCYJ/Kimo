@@ -18,6 +18,26 @@ def get_article_by_id(id):
 def create_article(title,content,category_id,description,cover_image):
     return db.implement('insert into articles(title,content,category_id,description,cover_image) values (%s,%s,%s,%s,%s)', [title, content,category_id,description,cover_image])or []
 
+def update_article(title, content, category_id, description, cover_image, id):
+    sql = """
+        UPDATE articles
+        SET
+            title = %s,
+            content = %s,
+            category_id = %s,
+            description = %s,
+            cover_image = %s
+        WHERE id = %s
+    """
+    return db.implement(sql, [
+        title,
+        content,
+        category_id,
+        description,
+        cover_image,
+        id
+    ]) or []
+
 def delete_article(id):
     return db.implement('delete from articles where id=%s', [id, ])
 

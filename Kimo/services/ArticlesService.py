@@ -61,7 +61,7 @@ def get_articles_lists(page):
         "page_id" : page_id
     }
 
-def send_article(title, content, category_name, description, cover_image):
+def send_article(title, content, category_name, description, cover_image,id):
     # 1. 基础校验
     if not title or not content:
         return {
@@ -97,30 +97,29 @@ def send_article(title, content, category_name, description, cover_image):
     else:
         category_id = None
 
-
-
-    # 5. 创建文章
-    article_result = articles.create_article(
-        title,
-        content,
-        category_id,
-        description,
-        cover_image
-    )
-
+    print(id)
+    if not id:
+        # 5. 创建文章
+        article_result = articles.create_article(
+            title,
+            content,
+            category_id,
+            description,
+            cover_image
+        )
+        
+    article_result = articles.update_article(title, content, category_id, description, cover_image, id)
     if not article_result:
-        return {
-            "status": False,
-            "msg": "创建文章失败"
+            return {
+                "status": False,
+                "msg": "编辑文章失败"
+            }
+    return {
+            "status": True,
+            "msg": "编辑文章成功",
+            "article_id": article_result
         }
 
-    return {
-        "status": True,
-        "msg": "创建文章成功",
-        "article_id": article_result
-    }
-
-          
 def edit_article(id):
     return articles.get_article_by_id(id)
 

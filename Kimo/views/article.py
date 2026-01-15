@@ -57,14 +57,28 @@ def article_post():
             category_name = request.json.get('category_name')
             description = request.json.get('description')
             cover_image =request.json.get('coverUrl')
+            id= None
             print(content)
             print(title)
             print(category_name)
-            create_page=Article.send_article(title,content,category_name,description,cover_image)
+            create_page=Article.send_article(title,content,category_name,description,cover_image,id)
             if not create_page['status']:
                 return jsonify({'message': create_page['msg']}),500    
             return jsonify({'message': create_page['msg']})
 
+@bg.route('/articles/update',methods=['POST'])
+def article_update():
+     if request.method == 'POST':
+        title = request.json.get('title')
+        content = request.json.get('content')
+        category_name = request.json.get('category_name')
+        description = request.json.get('description')
+        cover_image =request.json.get('coverUrl')
+        id= request.json.get('postId')
+        create_page=Article.send_article(title,content,category_name,description,cover_image,id)
+        if not create_page['status']:
+            return jsonify({'message': create_page['msg']}),500    
+        return jsonify({'message': create_page['msg']})
 
 
 @bg.route('/tags', methods=['GET', 'POST'])
@@ -105,6 +119,7 @@ def edit_article(post_id):
     ca_name= Article.get_category_name_by_id(ca_id)
     print(result)
     post = {
+    'id' :result['id'],
     'title': result['title'],
     'content': result['content'],
     'category_name': ca_name,
