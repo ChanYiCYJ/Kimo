@@ -17,9 +17,10 @@ def index():
     config =load_config('app','config')
     if request.method=='GET':
         return render_template('index.html', page_title=config["title"],
-                               page_subtitle=config["introduction"],total_pages=total_articles,pageId=page_id,config=config, posts=articles,categorys=category_all,tags=tag_all)
+                               page_subtitle=config["ltitle"],total_pages=total_articles,pageId=page_id,config=config, posts=articles,categorys=category_all,tags=tag_all)
 
     return articles
+
 
 @bg.route('/article/<int:article_id>',methods=['GET','POST'])
 def article(article_id):

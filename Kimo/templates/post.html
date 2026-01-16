@@ -458,7 +458,7 @@ if (res.ok) {
   document.getElementById('editBtn').addEventListener('click', async () => {
       const title = document.getElementById('titleInput').value.trim();
       const content = vditor.getValue().trim();
-      
+      const coverUrl = document.getElementById("coverPreview").src;
       const description = document.getElementById('descrInput').value.trim();
       const description_result = description.trim() === '' ? null : description.trim();
       const categoryToggle = document.getElementById('CategoryConditions').checked
@@ -569,8 +569,10 @@ urlInput.addEventListener("input", () => {
   document.getElementById('deleteCoverButton').addEventListener('click', async () => {
      document.getElementById('imageInput').classList.remove('hidden')
       document.getElementById('coverUrlInput').classList.remove('hidden')
+
       document.getElementById('deleteCoverButton').classList.add('hidden');
       document.getElementById('coverPreview').classList.add('hidden');
+      document.getElementById('coverPreview').removeAttribute('src'); 
   });
 </script>
 
