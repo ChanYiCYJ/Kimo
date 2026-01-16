@@ -17,7 +17,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-white">
+<div class="min-h-screen rounded-3xl  bg-white/80 backdrop-blur">
 
   <main class="mx-auto max-w-6xl px-4 sm:px-6 py-6">
 
@@ -151,6 +151,18 @@
 {% endblock %}
 
 {% block footer %}
+<div class="bg-white/80 backdrop-blur rounded-3xl shadow-sm p-6">
+       <a
+          href="/editor"
+          class="px-6 py-2 rounded-2xl
+                 text-sm 
+                 bg-white border text-black
+                 active:scale-[0.98]
+                 transition"
+        >
+          新建文章
+</a>
+</div>
 {% endblock %}
 
 {% block script %}
