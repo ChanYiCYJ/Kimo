@@ -96,7 +96,7 @@ def editor():
         if request.method == 'GET':
             categories = Article.get_all_categories()
             tag = Article.get_all_tags()
-            return render_template('createArticle.html', categories=categories, tags=tag)
+            return render_template('createArticle.html',editor='1', categories=categories, tags=tag)
         return render_template('post.html')
 
     return redirect(url_for('account.login'))
@@ -121,7 +121,7 @@ def edit_article(post_id):
     }
         print(post)
         print(post)
-        return render_template('createArticle.html', post=post,categories=categories, tags=tag)
+        return render_template('createArticle.html',editor='1', post=post,categories=categories, tags=tag)
     return redirect(url_for('account.login'))
 
 

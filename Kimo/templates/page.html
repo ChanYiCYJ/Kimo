@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class=" md:col-span-2 bg-white rounded-3xl shadow-sm p-4 sm:p-6">
+{% for list in page %}
+
+{% include "components/list.html" %}
+
+{% endfor %}
+        </div>
+{% if page.type == "html" %}
+{{ content | safe }}
+{% endif %}
+{% endblock %}

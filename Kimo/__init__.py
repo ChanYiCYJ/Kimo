@@ -8,6 +8,8 @@ def create_app():
 
     from  .views import account
     from .views import article
+    from .views import page
     app.register_blueprint(account.ac)
     app.register_blueprint(article.bg)
+    app.register_blueprint(page.pg)
     return app
