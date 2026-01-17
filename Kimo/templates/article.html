@@ -1,73 +1,97 @@
 {% extends "layout.html" %}
+
 {% block head %}
 <title>{{ article.title }} - {{ config.title }}</title>
+
+<style>
+  :root{
+    --max-article-width: 72ch;
+    --card-radius: 1rem;
+  }
+
+  /* 图片轻微悬浮效果 */
+  .markdown-body img {
+    cursor: zoom-in;
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .markdown-body img:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 24px rgba(16,24,40,0.08);
+  }
+
+  /* 代码块 / 图片圆角 */
+  .prose pre {
+    border-radius: 1rem;
+    overflow: auto;
+  }
+  .prose img {
+    border-radius: 1rem;
+  }
+
+  /* 卡片统一圆角 */
+  .bg-white.rounded-3xl {
+    border-radius: var(--card-radius);
+  }
+</style>
 {% endblock %}
+
 {% block header %}
-<header
-  class="sticky top-0 z-30
-         bg-white/80 backdrop-blur
-         border-b border-gray-200"
->
-  <div
-    class="max-w-6xl mx-auto px-4
-           h-14
-           flex items-center justify-between"
-  >
-    <!-- Left: Page Info -->
-    <div class="flex items-center ml-3 gap-3 min-w-0">
-        {% if article %} <a class="text-gray-500 text-sm hover:text-blue-500" href="/"> ← 返回 </a> {% endif %}
-      
-    </div>
-
-    <!-- Right: Nav -->
-    <nav class="flex items-center gap-4 text-sm text-gray-500 mr-4">
-      
-      <a
-        href="/about"
-        class="hover:text-gray-900 transition"
-      >
-        关于
-      </a>
-
-      {% if dashboard %}
-      <a
-        href="/dashboard"
-        class="hover:text-gray-900 transition"
-      >
-        Dashboard
-      </a>
-      {% endif %}
-    </nav>
+<header class="sticky top-0 z-30 bg-white/80 backdrop-blur border-b border-gray-200">
+  <div class="max-w-6xl mx-auto px-4 h-14 flex items-center">
+    <a href="/" class="text-gray-500 text-sm hover:text-blue-500">
+      ← 返回
+    </a>
   </div>
 </header>
-
 {% endblock %}
+
 {% block content %}
-        <!-- 正文 -->
-        <article class="md:col-span-2 bg-white rounded-3xl shadow-sm p-5">
-            <h1 class="mt-2 text-3xl mb-2" >{{ article.title }}</h1>
-                <span class="mt-2 mb-5 text-sm text-gray-400 truncate">
-        {{ page_subtitle }}
-      </span>
-      <div class="mt-5 border-t border-gray-200 my-2 p-2"></div>
+<!-- ===== 文章主体 ===== -->
+<article class="md:col-span-2 bg-white rounded-3xl shadow-sm p-4 sm:p-6">
+  <h1 class="text-3xl font-semibold mb-2">
+    {{ article.title }}
+  </h1>
 
-            <div class="mt-2 markdown-body max-w-none">
-                
+  <p class="text-sm text-gray-400">
+    {{ page_subtitle }}
+  </p>
+
+  <div class="mt-5 border-t border-gray-200"></div>
+
+  <!-- 正文 -->
+  <div class="flex justify-center">
+    <div class="w-full max-w-3xl">
+      <div
+        class="markdown-body prose prose-slate
+               prose-headings:font-semibold
+               prose-p:leading-8
+               prose-a:text-blue-600
+               prose-code:bg-gray-100 prose-code:px-1 prose-code:rounded
+               prose-pre:bg-gray-900 prose-pre:text-gray-100
+               prose-img:shadow
+               max-w-none mt-6"
+      >
         {{ content | safe }}
-            </div>
-        </article>
-    {% endblock %}
-        {% block footer %}
-            <!-- 文章信息 -->
-            <div class="bg-white rounded-3xl shadow-sm p-6">
-                <h3 class="font-semibold mb-3">文章信息</h3>
-                {% if article.category_name  %}
-                 <button class="flex h-9 shrink-0 items-center justify-center px-5 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 hover:border-primary/50 text-[#111618] dark:text-white transition-all active:scale-95">
-                {{ article.category_name }}
-            </button>
-                {% endif %}
-            </div>
-
-        </aside>
+      </div>
     </div>
-        {% endblock %}
+  </div>
+</article>
+{% endblock %}
+
+{% block footer %}
+<!-- ===== 文章信息（可选）===== -->
+<aside class="space-y-6">
+  {% if article.category_name %}
+  <div class="bg-white rounded-3xl shadow-sm p-5">
+    <h3 class="font-semibold mb-3">文章信息</h3>
+    <span class="inline-block px-4 py-1 rounded-full border text-sm">
+      {{ article.category_name }}
+    </span>
+  </div>
+  {% endif %}
+</aside>
+{% endblock %}
+
+{% block script %}
+<!-- 本页无 JS -->
+{% endblock %}
