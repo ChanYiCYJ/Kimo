@@ -168,11 +168,18 @@
 <!-- ===== JS ===== -->
 <script>
   /* Loading */
-  window.addEventListener("load", () => {
-    const loader = document.getElementById("global-loading");
-    loader.classList.add("fade-out");
-    setTimeout(() => loader.remove(), 600);
-  });
+   const hideLoader = () => {
+  const loader = document.getElementById("global-loading");
+  if (!loader) return;
+  loader.classList.add("fade-out");
+  setTimeout(() => loader.remove(), 600);
+};
+
+// 正常 load
+window.addEventListener("load", hideLoader);
+
+// 兜底：最多等 3 秒
+setTimeout(hideLoader, 3000);
 
   /* Blur-up 背景 */
   document.addEventListener("DOMContentLoaded", () => {
