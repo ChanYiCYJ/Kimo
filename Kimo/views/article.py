@@ -24,11 +24,11 @@ def index():
 
 @bg.route('/article/<int:article_id>',methods=['GET','POST'])
 def article(article_id):
-
+    config = load_config('app', 'config')
     article_page = Article.get_article_page(article_id)
     print(article_page)
     if request.method=='GET':
-        return render_template('article.html', page_title=article_page['title'],
+        return render_template('article.html',config=config , page_title=article_page['title'],
                                page_subtitle=f"Created: {article_page['created']}", article=article_page,content=article_page['content']
                                )
 
@@ -96,7 +96,7 @@ def editor():
         if request.method == 'GET':
             categories = Article.get_all_categories()
             tag = Article.get_all_tags()
-            return render_template('post.html', categories=categories, tags=tag)
+            return render_template('createArticle.html', categories=categories, tags=tag)
         return render_template('post.html')
 
     return redirect(url_for('account.login'))
@@ -121,7 +121,7 @@ def edit_article(post_id):
     }
         print(post)
         print(post)
-        return render_template('post.html', post=post,categories=categories, tags=tag)
+        return render_template('createArticle.html', post=post,categories=categories, tags=tag)
     return redirect(url_for('account.login'))
 
 
@@ -158,9 +158,10 @@ def upload_image_by_vditor():
         
 @bg.route('/dashboard/article/manage',methods=['GET'])
 def manage():
+    config = load_config('app', 'config')
     check_user = session.get('user_role')
     if check_user == 2:
         if request.method =='GET':
             article_all = Article.get_all_articles()
-            return render_template("article_manage.html",post=article_all)
+            return render_template("article_manage.html",config=config ,post=article_all)
     return redirect(url_for('account.login'))

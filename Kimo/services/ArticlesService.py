@@ -74,7 +74,7 @@ def send_article(title, content, category_name, description, cover_image,id):
         html = markdown.markdown(content)
         soup = bs(html, "html.parser")
         text = soup.get_text(separator=" ", strip=True)
-        description = text[:20]
+        description = text[:100]
 
     # 3. 封面图兜底
     cover_image = cover_image or None

@@ -14,37 +14,7 @@
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <style>
-    /* ===== Loading：只做 opacity（不卡） ===== */
-    @keyframes loadingFadeOut {
-      to { opacity: 0; }
-    }
-    #global-loading.fade-out {
-      animation: loadingFadeOut 0.6s ease forwards;
-      pointer-events: none;
-    }
-
-    /* ===== Blur-up：轻量版 ===== */
-    .blur-up {
-      filter: blur(10px);
-      transform: scale(1.03);
-      transition: filter 0.8s ease, transform 0.8s ease;
-      will-change: filter, transform;
-    }
-    .blur-up.loaded {
-      filter: blur(0);
-      transform: scale(1);
-    }
-
-    /* ===== 移动端性能优化 ===== */
-    @media (max-width: 768px) {
-      .no-mobile-blur {
-        backdrop-filter: none !important;
-        background-color: rgba(255,255,255,0.85);
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="/static/css/loading.css">
 </head>
 
 <body class="bg-gray-100 text-gray-800">
@@ -72,13 +42,12 @@
 
 <main class="max-w-6xl mx-auto px-4 my-10">
   <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    {% block content %}{% endblock %}
 
-    <div class="col-span-1 md:col-span-2 space-y-6">
-      {% block content %}{% endblock %}
-    </div>
+
 
     <div class="col-span-1 mt-4 space-y-6">
-      {% block footer %}
+
       <div class="bg-white/80 backdrop-blur mt-7 rounded-3xl shadow-sm p-6">
     <!-- Avatar -->
     <div class="flex flex-col items-center text-center space-y-4">
@@ -129,7 +98,7 @@
   </div>
 
      
-
+    {% block footer %}
       <div class="bg-white/80 backdrop-blur rounded-3xl shadow-sm p-6">
         <h3 class="font-semibold mb-3">分类</h3>
         {% if categorys %}
@@ -166,30 +135,7 @@
 {% block other %}{% endblock %}
 
 <!-- ===== JS ===== -->
-<script>
-  /* Loading */
-   const hideLoader = () => {
-  const loader = document.getElementById("global-loading");
-  if (!loader) return;
-  loader.classList.add("fade-out");
-  setTimeout(() => loader.remove(), 600);
-};
-
-// 正常 load
-window.addEventListener("load", hideLoader);
-
-// 兜底：最多等 3 秒
-setTimeout(hideLoader, 3000);
-
-  /* Blur-up 背景 */
-  document.addEventListener("DOMContentLoaded", () => {
-    const el = document.getElementById("bg-image");
-    const bg = getComputedStyle(el).backgroundImage.slice(5, -2);
-    const img = new Image();
-    img.src = bg;
-    img.onload = () => el.classList.add("loaded");
-  });
-</script>
+<script src="/static/js/loading.js" ></script>
 
 {% block script %}{% endblock %}
 

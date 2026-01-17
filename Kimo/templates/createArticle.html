@@ -1,52 +1,91 @@
-<!doctype html>
-<html lang="zh">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>发布文章</title>
+{% extends "layout.html" %}
+{% block head %}
+<title>新建/编辑文章</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vditor/dist/index.css">
+<link rel="stylesheet" href="/static/css/vditor.css">
+{% endblock %}
+{% block header %}
+<header
+  class="sticky top-0 z-30
+          bg-white/80 backdrop-blur
+         border-b border-gray-100"
+>
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+    <div class="flex h-16 items-center justify-between">
 
-  <!-- Tailwind CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+      <!-- 左侧：标题输入 -->
+      <div class="flex-1 flex items-center">
+        <input
+          id="titleInput"
+          placeholder="文章标题"
+          class="w-full max-w-2xl
+                 bg-transparent
+                 text-2xl tracking-tight
+                 text-gray-900 placeholder-gray-400
+                 focus:outline-none
+                 focus:placeholder-gray-300
+                 transition"
+        />
+      </div>
 
-  <!-- Vditor -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vditor/dist/index.css">
-    <link rel="stylesheet" href="/static/css/loading.css">
-    <link rel="stylesheet" href="/static/css/vditor.css">
-</head>
+      <!-- 右侧：操作 -->
+      <div class="flex items-center gap-3">
 
-<body class="bg-gray-100">
-<!-- ===== Loading ===== -->
-<div id="global-loading"
-     class="fixed inset-0 z-[9999] flex items-center justify-center bg-white">
-  <div class="w-8 h-8 border-4 border-gray-300 border-t-gray-700 rounded-full animate-spin"></div>
-</div>
+        <!-- 草稿 -->
+        <button
+          class="px-4 py-2 rounded-xl
+                 text-sm font-medium
+                 text-gray-700
+                 bg-gray-100
+                 hover:bg-gray-200
+                 active:scale-[0.98]
+                 transition"
+        >
+          保存草稿
+        </button>
+        {% if post %}
+      <button id="editBtn"
+       class="px-5 py-2 rounded-xl
+                 text-sm font-semibold
+                 bg-black text-white
+                 hover:bg-gray-900
+                 active:scale-[0.98]
+                 transition">编辑</button>
+        {% else %}
+        <!-- 发布 -->
+        <button
+          id="sendBtn"
+          class="px-5 py-2 rounded-xl
+                 text-sm font-semibold
+                 bg-black text-white
+                 hover:bg-gray-900
+                 active:scale-[0.98]
+                 transition"
+        >
+          发布
+        </button>
+        {% endif %}
+      </div>
 
-
-<main class="max-w-7xl mx-auto p-2 space-y-3">
-    
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 ">
-        <div class="col-span-1 md:col-span-2 space-y-6 basis-3/4">
-
+    </div>
+  </div>
+</header>
+{% endblock %}
+{% block content %}
+<div class="col-span-1 md:col-span-2 space-y-6">
             <!-- 编辑器 -->
   <section>
     <div id="vditor" class=" min-h-[800px]">
-
     </div>
   </section>
-        </div>
-
-    <div class="col-span-1">
-        <!-- 操作 -->
-  <div class="flex justify-start gap-3 ">
-    
-   
-      
-  </div>
-        <aside class="space-y-6 mb-2">
-  <div class="bg-white rounded-2xl mb-4 shadow-sm border border-gray-100 p-4">
+</div>
+{% endblock %}
+{% block footer %}
+<aside class="space-y-6">
+  <div class="bg-white rounded-2xl  shadow-sm border border-gray-100 p-4">
     <input rows="2"
     class="flex flex-wrap w-full rounded-xl border border-gray-200 mb-3 p-4 space-y-6"
-    placeholder="文章简介（无填写则选取开头）" 
+    placeholder="文章简介（无填写则选取开头）"
     id="descrInput">
     <!-- 封面上传区 -->
 <section
@@ -115,10 +154,10 @@
       </button>
 </section>
 
-      
+
 
     </section>
-    
+
   </div>
 </aside>
 <aside class="space-y-6 mb-4">
@@ -146,7 +185,7 @@
             type="checkbox"
             id="CategoryConditions"
             class="peer sr-only"
-            
+
           />
 
           <!-- Track -->
@@ -223,8 +262,8 @@
 <div id="data-container" data-info='{{ post | tojson | safe }}'></div>
 {% endif %}
 </div>
-    </div>
-</main>
+{% endblock %}
+{% block other %}
 <!-- Modal -->
 <div class="fixed inset-0 bg-black/40 flex items-center justify-center hidden"
      id="modal">
@@ -237,6 +276,8 @@
         </button>
   </div>
 </div>
+{% endblock %}
+{% block script %}
 <script>
 function showModal(message) {
   document.getElementById('modal-text').innerText = message
@@ -262,37 +303,7 @@ function closeModal() {
 <!-- Vditor JS -->
 <script src="https://cdn.jsdelivr.net/npm/vditor/dist/index.min.js"></script>
 {% if post %}
-<script>
-  
-  const container = document.getElementById('data-container');
-// dataset 会自动处理 JSON 字符串
-  const POST_DATA = JSON.parse(container.dataset.info);
-  if (POST_DATA){
-    document.getElementById('titleInput').value = POST_DATA.title || '';
-    document.getElementById('descrInput').value = POST_DATA.description || '';
-
-    if (POST_DATA.cover_url) {
-      coverUrl = POST_DATA.cover_url;
-      const img = document.getElementById('coverPreview');
-      img.src = coverUrl;
-      img.classList.remove('hidden');
-      
-      document.getElementById('imageInput').classList.add('hidden')
-      document.getElementById('coverUrlInput').classList.add('hidden')
-      document.getElementById('deleteCoverButton').classList.remove('hidden');
-    }
-
-    if (POST_DATA.category_id) {
-      // 获取 input 元素
-      const checkbox = document.getElementById('CategoryConditions');
-      // 设置为开启
-      checkbox.checked = true;
-      document.getElementById('CategoryList').classList.remove('hidden');
-      document.getElementById('Headline').value = POST_DATA.category_name;
-    }
-  };
-  
-</script>
+<script src="/static/js/getEdit.js"></script>
 {% endif %}
 <script>
   const vditor = new Vditor('vditor', {
@@ -328,109 +339,19 @@ function closeModal() {
     if (POST_DATA){
       console.log(POST_DATA);
       vditor.setValue(POST_DATA.content || '');
-      
+
     }
     {% endif %}
   },
     });
 
-    
-    document.getElementById('sendBtn').addEventListener('click', async () => {
-      const title = document.getElementById('titleInput').value.trim();
-      const content = vditor.getValue().trim();
-      const description = document.getElementById('descrInput').value.trim();
-      const description_result = description.trim() === '' ? null : description.trim();
-      const categoryToggle = document.getElementById('CategoryConditions').checked
-      if (!title) {
-        showModal('标题不能为空');
-        return;
-      }
-      if (!content) {
-        showModal('内容不能为空');
-        return;
-      }
-      if (!categoryToggle) {
-        category_name = null;
-      }
-      else{
-        category_name = document.getElementById('Headline').value;
-      }
- const res = await fetch('/post', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({ title, content ,category_name,description_result,coverUrl})
-});
 
-const data = await res.json();
-
-if (res.ok) {
-  showModal('发布成功');
-  vditor.setValue('');
-
-  setTimeout(() => {
-    window.location.href = '/';
-  }, 800);
-} else {
-  showModal(data.message || '发布失败');
-}
-    });
-</script>
-<script>
-    const postId =POST_DATA.id;
-    console.log(postId);
-    
-  document.getElementById('editBtn').addEventListener('click', async () => {
-      const title = document.getElementById('titleInput').value.trim();
-      const content = vditor.getValue().trim();
-      const coverUrl = document.getElementById("coverPreview").src;
-      const description = document.getElementById('descrInput').value.trim();
-      const description_result = description.trim() === '' ? null : description.trim();
-      const categoryToggle = document.getElementById('CategoryConditions').checked
-      if (!title) {
-        showModal('标题不能为空');
-        return;
-      }
-      if (!content) {
-        showModal('内容不能为空');
-        return;
-      }
-      if (!postId) {
-        showModal('id is empty');
-        return;
-      }
-      if (!categoryToggle) {
-        category_name = null;
-      }
-      else{
-        category_name = document.getElementById('Headline').value;
-      }
- const res = await fetch('/articles/update', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({ title, content ,category_name,description_result,coverUrl , postId})
-});
-
-const data = await res.json();
-
-if (res.ok) {
-  showModal('发布成功');
-  vditor.setValue('');
-
-  setTimeout(() => {
-    window.location.href = '/';
-  }, 800);
-} else {
-  showModal(data.message || '发布失败');
-}
-    });
 
 </script>
-<script>
-const fileInput = document.getElementById("coverInput");
+<script src="/static/js/createArticle.js"></script>
+<script src="/static/js/editArticle.js"></script>
+<script >
+    const fileInput = document.getElementById("coverInput");
 const urlInput = document.getElementById("coverUrlInput");
 const preview = document.getElementById("coverPreview");
 
@@ -498,11 +419,7 @@ urlInput.addEventListener("input", () => {
 
       document.getElementById('deleteCoverButton').classList.add('hidden');
       document.getElementById('coverPreview').classList.add('hidden');
-      document.getElementById('coverPreview').removeAttribute('src'); 
+      document.getElementById('coverPreview').removeAttribute('src');
   });
 </script>
-
-<script src="/static/js/loading.js" ></script>
-
-</body>
-</html>
+{% endblock %}

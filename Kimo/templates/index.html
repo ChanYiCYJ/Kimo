@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
+<div class="col-span-1 md:col-span-2 space-y-6">
   <!-- List Header -->
   {% if pageId == 1 %}
   <div class=" flex items-center justify-between">
@@ -20,6 +21,7 @@
   更多文章 →
   </a>
   </div>
+
   {% endif %}
   
 
@@ -93,5 +95,5 @@
   </ul>
 </nav>
 {% endif %}
-
+</div>
 {% endblock %}

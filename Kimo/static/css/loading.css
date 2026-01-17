@@ -1,17 +1,28 @@
-/* static/css/loading.css */
+/* ===== Loading：只做 opacity（不卡） ===== */
+    @keyframes loadingFadeOut {
+      to { opacity: 0; }
+    }
+    #global-loading.fade-out {
+      animation: loadingFadeOut 0.6s ease forwards;
+      pointer-events: none;
+    }
 
-/* 加载条 */
-#loading-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 0%;
-    height: 2px;
-    background-color: #4e80e3;
-    z-index: 9999;
-    transition: width 0.3s ease-out;
-}
+    /* ===== Blur-up：轻量版 ===== */
+    .blur-up {
+      filter: blur(10px);
+      transform: scale(1.03);
+      transition: filter 0.8s ease, transform 0.8s ease;
+      will-change: filter, transform;
+    }
+    .blur-up.loaded {
+      filter: blur(0);
+      transform: scale(1);
+    }
 
-#loading-bar.active {
-    width: 100%;
-}
+    /* ===== 移动端性能优化 ===== */
+    @media (max-width: 768px) {
+      .no-mobile-blur {
+        backdrop-filter: none !important;
+        background-color: rgba(255,255,255,0.85);
+      }
+    }

@@ -1,73 +1,410 @@
 {% extends "layout.html" %}
+
 {% block head %}
 <title>{{ article.title }} - {{ config.title }}</title>
+
+<style>
+  :root{
+    --header-height: 3.5rem; /* 与 layout 中 header 高度对应 (h-14) */
+    --gap-top: 1rem;
+    --max-article-width: 72ch;
+    --card-radius: 1rem;
+  }
+
+  /* ================= 阅读进度条 ================= */
+  #reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0;
+    background: linear-gradient(90deg, #3b82f6, #6366f1);
+    z-index: 60;
+    transition: width 120ms linear;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  }
+
+  /* ================= TOC ================= */
+  .toc-card {
+    transition: transform .18s ease, opacity .18s ease;
+  }
+
+  #toc a {
+    display: block;
+    padding-left: .5rem;
+    border-left: 2px solid transparent;
+    padding-right: .75rem;
+    padding-top: .25rem;
+    padding-bottom: .25rem;
+    border-radius: .5rem;
+    transition: all .14s ease;
+  }
+  #toc a:hover {
+    transform: translateX(4px);
+  }
+  #toc a.active {
+    color: #1e40af;
+    border-color: #1e40af;
+    font-weight: 600;
+    background: rgba(30,64,175,0.06);
+  }
+
+  /* ================= 图片 ================= */
+  .markdown-body img {
+    cursor: zoom-in;
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .markdown-body img:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 24px rgba(16,24,40,0.08);
+  }
+
+  /* ================= 专注模式（仅影响布局） ================= */
+  /* hide header & right column (you had these rules already) */
+  .focus-mode header { display: none; }
+  .focus-mode main > div > div:nth-child(2) { display: none; }
+
+  /* 阻止 body 主滚动，正文容器滚动 */
+  .focus-mode body, .focus-mode html {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* 使文章容器在视口高度内可滚动（减去顶部间隙，可根据需要调整） */
+  .focus-mode #article-container {
+    max-width: var(--max-article-width);
+    margin: 0 auto;
+    height: calc(100vh - var(--gap-top) - 1.5rem); /* 留点底部空间，避免按钮遮挡 */
+    padding-bottom: 3.5rem; /* 防止底部内容被返回顶部按钮遮挡 */
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    background: linear-gradient(180deg, rgba(255,255,255,0.006), rgba(255,255,255,0));
+    border-radius: 0.5rem;
+    box-shadow: 0 8px 40px rgba(2,6,23,0.04);
+  }
+
+  /* 保持文章区域视觉中心（非专注模式下也好看） */
+  #article-container {
+    transition: box-shadow .18s ease, transform .18s ease;
+  }
+
+  /* 返回顶部按钮（仅在专注模式下显示） */
+  #back-to-top {
+    position: fixed;
+    right: 20px;
+    bottom: 28px;
+    z-index: 80;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    padding: .6rem .8rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(2,6,23,0.12);
+    background: linear-gradient(90deg, #3b82f6, #6366f1);
+    color: white;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transform: translateY(8px);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform .18s ease, opacity .18s ease;
+  }
+  #back-to-top.show {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* 小屏适配：按钮更小并向内微调 */
+  @media (max-width: 640px){
+    #back-to-top { right: 12px; bottom: 16px; padding: .5rem .6rem; border-radius: 10px; }
+    .focus-mode #article-container { height: calc(100vh - var(--gap-top) - .8rem); }
+  }
+
+  /* Footer / aside card 微调 */
+  .bg-white.rounded-3xl {
+    border-radius: var(--card-radius);
+  }
+
+  /* 视觉微动效：进入专注模式时正文轻微放大 */
+  .focus-mode #article-container {
+    transform-origin: top center;
+    transform: scale(1.01);
+  }
+
+  /* 优化代码块/图片圆角 */
+  .prose pre { border-radius: 1rem; overflow: auto; }
+  .prose img { border-radius: 1rem; }
+
+  /* 轻量过渡 */
+  .toc-card, .markdown-body, .prose { transition: color .12s ease, background .12s ease; }
+</style>
 {% endblock %}
+
 {% block header %}
-<header
-  class="sticky top-0 z-30
-         bg-white/80 backdrop-blur
-         border-b border-gray-200"
->
-  <div
-    class="max-w-6xl mx-auto px-4
-           h-14
-           flex items-center justify-between"
-  >
-    <!-- Left: Page Info -->
-    <div class="flex items-center ml-3 gap-3 min-w-0">
-        {% if article %} <a class="text-gray-500 text-sm hover:text-blue-500" href="/"> ← 返回 </a> {% endif %}
-      
+<header class="sticky top-0 z-30 bg-white/80 backdrop-blur border-b border-gray-200">
+  <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+    <a href="/" class="text-gray-500 text-sm hover:text-blue-500">← 返回</a>
+
+    <div class="flex items-center gap-3">
+      <button onclick="toggleFocus()" id="focus-toggle" class="text-sm text-gray-600 hover:text-gray-900">
+        专注阅读
+      </button>
     </div>
-
-    <!-- Right: Nav -->
-    <nav class="flex items-center gap-4 text-sm text-gray-500 mr-4">
-      
-      <a
-        href="/about"
-        class="hover:text-gray-900 transition"
-      >
-        关于
-      </a>
-
-      {% if dashboard %}
-      <a
-        href="/dashboard"
-        class="hover:text-gray-900 transition"
-      >
-        Dashboard
-      </a>
-      {% endif %}
-    </nav>
   </div>
 </header>
 
+<div id="reading-progress" aria-hidden="true"></div>
 {% endblock %}
+
 {% block content %}
-        <!-- 正文 -->
-        <article class="md:col-span-2 bg-white rounded-3xl shadow-sm p-5">
-            <h1 class="mt-2 text-3xl mb-2" >{{ article.title }}</h1>
-                <span class="mt-2 mb-5 text-sm text-gray-400 truncate">
-        {{ page_subtitle }}
-      </span>
-      <div class="mt-5 border-t border-gray-200 my-2 p-2"></div>
 
-            <div class="mt-2 markdown-body max-w-none">
-                
+<!-- ===== 文章主体 ===== -->
+<article class="md:col-span-2 bg-white rounded-3xl shadow-sm p-4 sm:p-6">
+  <h1 class="text-3xl font-semibold mb-2">{{ article.title }}</h1>
+  <p class="text-sm text-gray-400">{{ page_subtitle }}</p>
+  <div class="mt-5 border-t border-gray-200"></div>
+
+  <!-- 正文容器（在专注模式下变成独立滚动区域） -->
+  <div class="flex justify-center">
+    <div id="article-container" class="w-full max-w-3xl">
+      <div id="article-content"
+           class="markdown-body prose prose-slate prose-headings:font-semibold prose-p:leading-8
+                  prose-a:text-blue-600 prose-code:bg-gray-100 prose-code:px-1 prose-code:rounded
+                  prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:rounded-xl
+                  prose-img:rounded-2xl prose-img:shadow max-w-none mt-6">
         {{ content | safe }}
-            </div>
-        </article>
-    {% endblock %}
-        {% block footer %}
-            <!-- 文章信息 -->
-            <div class="bg-white rounded-3xl shadow-sm p-6">
-                <h3 class="font-semibold mb-3">文章信息</h3>
-                {% if article.category_name  %}
-                 <button class="flex h-9 shrink-0 items-center justify-center px-5 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 hover:border-primary/50 text-[#111618] dark:text-white transition-all active:scale-95">
-                {{ article.category_name }}
-            </button>
-                {% endif %}
-            </div>
-
-        </aside>
+      </div>
     </div>
-        {% endblock %}
+  </div>
+</article>
+
+{% endblock %}
+
+{% block footer %}
+<!-- ===== 右侧栏（目录 + 信息）===== -->
+<aside class="space-y-6">
+  <!-- TOC -->
+  <div id="toc-card" class="toc-card bg-white rounded-3xl shadow-sm p-5 sticky top-20">
+    <h3 class="font-semibold mb-3">目录</h3>
+    <nav id="toc" class="text-sm text-gray-600 space-y-1"></nav>
+  </div>
+
+  <!-- 文章信息 -->
+  <div class="bg-white rounded-3xl shadow-sm p-5">
+    <h3 class="font-semibold mb-3">文章信息</h3>
+    {% if article.category_name %}
+      <span class="inline-block px-4 py-1 rounded-full border text-sm">
+        {{ article.category_name }}
+      </span>
+    {% endif %}
+  </div>
+</aside>
+
+<!-- 返回顶部按钮（仅用于专注模式） -->
+<button id="back-to-top" aria-label="返回顶部" title="返回顶部">
+  ↑ 顶部
+</button>
+{% endblock %}
+
+{% block script %}
+<script>
+(function(){
+  /* DOM references */
+  const toc = document.getElementById("toc");
+  const tocCard = document.getElementById("toc-card");
+  const articleContent = document.getElementById("article-content");
+  const articleContainer = document.getElementById("article-container");
+  const readingProgress = document.getElementById("reading-progress");
+  const backToTop = document.getElementById("back-to-top");
+  const focusToggle = document.getElementById("focus-toggle");
+  const pageHeader = document.querySelector("header");
+
+  /* helper: header height in px (fallback to CSS var or 56) */
+  function headerHeightPx(){
+    if (pageHeader) return Math.round(pageHeader.getBoundingClientRect().height);
+    const v = getComputedStyle(document.documentElement).getPropertyValue('--header-height') || '';
+    // 尝试把 rem 转换为 px（如果是数字则直接用）
+    if (v.indexOf('rem') !== -1) {
+      const rem = parseFloat(v) || 3.5;
+      return Math.round(rem * (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16));
+    }
+    const n = parseInt(v, 10);
+    return isNaN(n) ? 56 : n;
+  }
+
+  /* ========== 生成 TOC（只使用 H2/H3） ========== */
+  function buildTOC(){
+    toc.innerHTML = "";
+    const headers = articleContent.querySelectorAll("h2, h3");
+    if (!headers || headers.length === 0) {
+      tocCard.style.display = "none";
+      return [];
+    }
+    tocCard.style.display = ""; // 显示
+    headers.forEach((h, i) => {
+      const id = h.id || ("heading-" + i);
+      h.id = id;
+
+      const a = document.createElement("a");
+      a.href = "#" + id;
+      a.textContent = h.textContent.trim();
+      a.className = (h.tagName === "H3") ? "ml-3" : "";
+      a.addEventListener("click", (e) => {
+        e.preventDefault();
+        const target = document.getElementById(id);
+        if (!target) return;
+
+        // 在专注模式下，用 articleContainer 滚动（相对于容器）
+        if (document.body.classList.contains("focus-mode")) {
+          // 计算目标在容器内的 offsetTop（考虑容器的内边距）
+          const offset = target.offsetTop - 12; // 轻微偏移
+          articleContainer.scrollTo({ top: offset, behavior: "smooth" });
+        } else {
+          // 非专注模式：滚动到页面并考虑 header 高度
+          const topOffset = headerHeightPx();
+          const rectTop = target.getBoundingClientRect().top + window.scrollY;
+          window.scrollTo({ top: Math.max(0, rectTop - topOffset - 8), behavior: "smooth" });
+        }
+
+        // 更新地址栏 hash（不产生默认跳转）
+        try {
+          history.pushState(null, "", "#" + id);
+        } catch (err) { /* ignore for old browsers */ }
+      });
+      toc.appendChild(a);
+    });
+    return Array.from(headers);
+  }
+
+  /* ========== TOC 高亮（根据哪个 heading 位置最接近顶部） ========== */
+  function updateTOCHighlight(headers){
+    if (!headers || headers.length === 0) return;
+    let currentId = null;
+    if (document.body.classList.contains("focus-mode")) {
+      // 使用容器的边界做判断
+      const containerRect = articleContainer.getBoundingClientRect();
+      // 选取距离容器顶部小于 120 且最大的一项
+      headers.forEach(h => {
+        const r = h.getBoundingClientRect();
+        const topRel = r.top - containerRect.top; // 元素相对于容器顶部的距离
+        if (topRel < 120) currentId = h.id;
+      });
+    } else {
+      headers.forEach(h => {
+        const r = h.getBoundingClientRect();
+        if (r.top < 120) currentId = h.id;
+      });
+    }
+    document.querySelectorAll("#toc a").forEach(a => {
+      a.classList.toggle("active", a.getAttribute("href") === "#" + currentId);
+    });
+  }
+
+  /* ========== 阅读进度：支持两种模式（全页面 / 正文容器） ========== */
+  function updateProgress(){
+    let progress = 0;
+    if (document.body.classList.contains("focus-mode")) {
+      const sc = articleContainer;
+      const total = sc.scrollHeight - sc.clientHeight;
+      if (total > 0) progress = (sc.scrollTop / total) * 100;
+    } else {
+      const doc = document.documentElement;
+      progress = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight)) * 100;
+    }
+    readingProgress.style.width = Math.max(0, Math.min(100, progress)) + "%";
+  }
+
+  /* ========== 返回顶部按钮显隐（仅在专注模式下） ========== */
+  function updateBackToTop(){
+    if (!document.body.classList.contains("focus-mode")) {
+      backToTop.classList.remove("show");
+      return;
+    }
+    const sc = articleContainer;
+    if (sc.scrollTop > 320) backToTop.classList.add("show");
+    else backToTop.classList.remove("show");
+  }
+
+  backToTop.addEventListener("click", () => {
+    if (document.body.classList.contains("focus-mode")) {
+      articleContainer.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  });
+
+  /* Toggle focus mode */
+  window.toggleFocus = function toggleFocus(){
+    document.body.classList.toggle("focus-mode");
+    const headers = buildTOC();
+    // small delay to allow layout changes (especially when header toggles)
+    setTimeout(() => {
+      updateProgress();
+      updateTOCHighlight(headers);
+      updateBackToTop();
+    }, 80);
+  };
+
+  /* ========== 初始化 ========== */
+  let headers = buildTOC();
+
+  // 滚动监听：监听 articleContainer 和 window（两者皆需，适配两种模式）
+  articleContainer.addEventListener("scroll", () => {
+    updateProgress();
+    if (headers.length) updateTOCHighlight(headers);
+    updateBackToTop();
+  });
+
+  window.addEventListener("scroll", () => {
+    updateProgress();
+    if (!document.body.classList.contains("focus-mode") && headers.length) updateTOCHighlight(headers);
+  }, { passive: true });
+
+  // 当内容或图片加载完成后，重建 TOC（避免异步内容导致丢失）
+  window.addEventListener("load", () => {
+    headers = buildTOC();
+    updateProgress();
+    // 如果 URL 有 hash，平滑滚动到对应位置（并处理 header 偏移）
+    if (location.hash) {
+      const id = location.hash.slice(1);
+      const target = document.getElementById(id);
+      if (target) {
+        // defer a bit to allow layout to settle
+        setTimeout(() => {
+          if (document.body.classList.contains("focus-mode")) {
+            articleContainer.scrollTo({ top: target.offsetTop - 12, behavior: "smooth" });
+          } else {
+            const topOffset = headerHeightPx();
+            const rectTop = target.getBoundingClientRect().top + window.scrollY;
+            window.scrollTo({ top: Math.max(0, rectTop - topOffset - 8), behavior: "smooth" });
+          }
+        }, 120);
+      }
+    }
+  });
+
+  // 监听 DOM 变化（如果文章由异步替换内容，可自动更新 TOC）
+  const mo = new MutationObserver(() => { headers = buildTOC(); updateProgress(); });
+  mo.observe(articleContent, { childList: true, subtree: true });
+
+  // 快捷键：按 F 切换专注模式
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "f" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      toggleFocus();
+    }
+  });
+
+  // 初始让 TOC 高亮一次
+  setTimeout(() => {
+    headers = buildTOC();
+    updateTOCHighlight(headers);
+  }, 120);
+
+})();
+</script>
+{% endblock %}
+
