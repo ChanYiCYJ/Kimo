@@ -2,33 +2,67 @@
     href="{{ list.url }}"
     target="_blank"
     rel="noopener"
-    class="mt-4
-      group
-      flex items-center gap-4
+    class="group
+    mt-4
+    flex items-center
+    rounded-2xl
+    border border-gray-200
+    bg-white
+    p-4
+    transition
+    hover:-translate-y-1
+    hover:shadow-sm
+    hover:border-gray-300
+    active:scale-[0.98]
+    "
+  >
+    <div
+    class="
+      h-10 w-10
+      flex items-center justify-center
       rounded-2xl
-      border border-gray-200
-      bg-white
-      p-4
+      bg-blue-50
+      text-gary-600
+      text-sm font-semibold
       transition
-      hover:-translate-y-1
-      hover:shadow-md
+      group-hover:bg-gary-100
     "
   >
     <!-- 头像 -->
     <img
       src="{{ list.avatar }}"
       alt="{{ list.name }}"
-      class="h-12 w-12 rounded-full object-cover border"
+      class=" rounded-full object-cover border"
       loading="lazy"
     />
-
+    </div>
     <!-- 信息 -->
-    <div class="flex-1 min-w-0">
-      <h3 class="font-semibold text-gray-800 group-hover:text-blue-600">
+    <div class="flex-1 min-w-0 ml-2">
+      <h3 class="text-base font-medium
+        text-gray-800
+        transition
+        group-hover:text-gary-600
+        truncate">
         {{ list.name }}
       </h3>
       <p class="text-sm text-gray-500 truncate">
         {{ list.desc }}
       </p>
     </div>
+    <!-- 右侧箭头 -->
+  <svg
+    class="
+      h-5 w-5
+      text-gray-300
+      transition
+      group-hover:translate-x-1
+      group-hover:text-gary-500
+    "
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    viewBox="0 0 24 24"
+  >
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+  </svg>
   </a>

@@ -2,11 +2,13 @@ from flask import Blueprint, render_template, request, session, jsonify,redirect
 
 from Kimo.config import load_config
 from Kimo.services import ArticlesService as Article
+from Kimo.services import PageService as Page
 bg=Blueprint('article',__name__)
 
 @bg.route('/',methods=['GET','POST'])
 def index():
     page= request.args.get("page", 1, type=int)
+    page_list =Page.get_all_page()
     category_all = Article.get_all_categories()
     result =Article.get_articles_lists(page)
     page_id=result['page_id']+1
@@ -17,7 +19,7 @@ def index():
     config =load_config('app','config')
     if request.method=='GET':
         return render_template('index.html', page_title=config["title"],
-                               page_subtitle=config["ltitle"],total_pages=total_articles,pageId=page_id,config=config, posts=articles,categorys=category_all,tags=tag_all)
+                               pageList=page_list,page_subtitle=config["ltitle"],total_pages=total_articles,pageId=page_id,config=config, posts=articles,categorys=category_all,tags=tag_all)
 
     return articles
 

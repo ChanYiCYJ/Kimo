@@ -1,12 +1,22 @@
 from Kimo.models import page
 import json
 support_type={'markdown','html','list'}
-def create(name,page_type,content):
+def create(name,content,page_type):
     check =page.get_page_by_name(name)
     if check:
         return {
             'status': False,
             'msg': '创建Page时不可重名'
+        }
+    if not content:
+        return {
+            'status': False,
+            'msg':'You need to enter content'
+        }
+    if not page_type:
+        return {
+            'status': False,
+            'msg':'You need to enter page type'
         }
     if page_type not in support_type:
         return {
@@ -17,13 +27,51 @@ def create(name,page_type,content):
     if result['status']:
         return {
             'status': True,
-            'msg':'Page成功'
+            'msg':'Created Page'
         }
     return {
         'status': False,
         'msg':'创建失败'
     }
 
+def edit(page_id,name,content,page_type):
+    check =page.get_page_by_id(page_id)
+    if not check:
+        return {
+            'status': False,
+            'msg':'Not have this page'
+        }
+    if not name:
+        return {
+            'status': False,
+            'msg':'You need to enter name'
+        }
+    if not content:
+        return {
+            'status': False,
+            'msg':'You need to enter content'
+        }
+    if not page_type:
+        return {
+            'status': False,
+            'msg':'You need to enter page type'
+        }
+    result =page.edit_page(page_id,name,content,page_type)
+    if result:
+        return {
+
+            'status': True,
+            'msg':'Edited Page'
+        }
+    return {
+        'status': False,
+        'mag':'Failed'
+    }
+
+def get_all_page():
+    result =page.get_all_page()
+    print(result)
+    return result
 
 def get_by_id(page_id):
     return page.get_page_by_id(page_id)

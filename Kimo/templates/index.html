@@ -1,29 +1,8 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div class="col-span-1 md:col-span-2 space-y-6">
-  <!-- List Header -->
-  {% if pageId == 1 %}
-  <div class=" flex items-center justify-between">
-    <h2 class="text-sm font-medium text-gray-800">
-      最近文章
-    </h2>
-    <a href="?page=2"
-  class="text-sm font-medium text-gray-800 justify-end
-         cursor-pointer select-none
-         transition
-         duration-150
-         ease-out
-         hover:text-black
-         active:scale-95
-         active:text-gray-600
-         hover:translate-x-0.5">
-  更多文章 →
-  </a>
-  </div>
 
-  {% endif %}
-  
+<div class="col-span-1 md:col-span-2 space-y-6">
 
   <!-- Posts -->
   {% if posts %}

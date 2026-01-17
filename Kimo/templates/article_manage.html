@@ -11,7 +11,16 @@
       <span class="opacity-70">📄</span>
       <span class="font-medium">文章</span>
     </div>
-
+    <a
+          href="/editor"
+          class="px-6 py-2 m-2 rounded-2xl
+                 text-sm
+                 bg-white border text-black
+                 active:scale-[0.98]
+                 transition"
+        >
+          新建文章
+</a>
   </div>
 </header>
 {% endblock %}
@@ -153,18 +162,6 @@
 {% endblock %}
 
 {% block footer %}
-<div class="bg-white/80 backdrop-blur rounded-3xl shadow-sm p-6">
-       <a
-          href="/editor"
-          class="px-6 py-2 rounded-2xl
-                 text-sm 
-                 bg-white border text-black
-                 active:scale-[0.98]
-                 transition"
-        >
-          新建文章
-</a>
-</div>
 {% endblock %}
 
 {% block script %}
