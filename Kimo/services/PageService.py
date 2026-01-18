@@ -1,5 +1,6 @@
 from Kimo.models import page
 import json
+from Kimo.services import ArticlesService
 support_type={'markdown','html','list'}
 def create(name,content,page_type):
     check =page.get_page_by_name(name)
@@ -88,6 +89,15 @@ def get_by_name(page_name):
                 'page_type': page_result['type'],
                 'content': content
             }
+        if page_result['type']=='markdown':
+            content = get_page_markdown(page_result['content'])
+            return {
+                'status': True,
+                'msg': '查询成功',
+                'page_name': page_result['name'],
+                'page_type': page_result['type'],
+                'content': content
+            }
         return {
             'status': True,
             'msg': '查询成功',
@@ -100,10 +110,9 @@ def get_by_name(page_name):
         'msg':'查询出错'
     }
 def get_page_markdown(content):
-    return content
+    return ArticlesService.switch_markdown_to_html(content)
 
-def get_page_html(content):
-    return content
+
 
 def get_page_list(content):
     lists = json.loads(content)

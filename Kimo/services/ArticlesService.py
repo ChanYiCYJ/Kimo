@@ -28,18 +28,7 @@ def get_article_page(article_id):
             "msg" : '文章不存在'
         }
     category_name=get_category_name_by_id(result['category_id'])
-    content = markdown.markdown(
-            result['content'],
-            extensions=[
-                "tables",
-                "toc",
-                "fenced_code",
-                "pymdownx.superfences",
-                "pymdownx.tasklist",
-                "pymdownx.details",
-                "pymdownx.inlinehilite",
-            ]
-)
+    content = switch_markdown_to_html(result['content'])
     return{
         "status":True,
         "title" :result['title'],
@@ -47,6 +36,20 @@ def get_article_page(article_id):
         "created" : result['created'],
         "category_name":category_name,
     }
+
+def switch_markdown_to_html(content):
+    return markdown.markdown(
+        content,
+        extensions=[
+            "tables",
+            "toc",
+            "fenced_code",
+            "pymdownx.superfences",
+            "pymdownx.tasklist",
+            "pymdownx.details",
+            "pymdownx.inlinehilite",
+        ]
+    )or[]
 
 def get_articles_lists(page):
     perpage = 5
