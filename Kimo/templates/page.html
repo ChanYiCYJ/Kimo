@@ -1,15 +1,17 @@
 {% extends "layout.html" %}
 
 {% block content %}
-{% if page.type == "list" %}
+
     <div class=" md:col-span-2 bg-white rounded-3xl shadow-sm p-4 sm:p-6">
+        {% if page.type == "list" %}
 {% for list in page %}
 {% include "components/list.html" %}
-{% endfor %}</div>{% endif %}
+{% endfor %}{% endif %}
 {% if page.type == "html" %}
 {{ page.content | safe }}
 {% endif %}
 {% if page.type == "html" %}
 {{ page.content | safe }}
 {% endif %}
+        </div>
 {% endblock %}
