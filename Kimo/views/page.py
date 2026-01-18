@@ -9,8 +9,8 @@ def view_page(page_title):
     if request.method == 'GET':
         config =load_config('app','config')
         page_result = PageService.get_by_name(page_title)
-        print(page_result['content'])
-        return render_template('page.html',p='1',config=config,page_title=page_title,page=page_result['content'])
+        print(page_result)
+        return render_template('page.html',p='1',config=config,page_title=page_title,pageType=page_result['page_type'],page=page_result['content'])
     return '不支持'
 
 @pg.route('/page/create',methods=['POST'])
