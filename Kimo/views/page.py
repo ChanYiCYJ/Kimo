@@ -8,9 +8,11 @@ def view_page(page_title):
     if request.method == 'GET':
         config =load_config('app','config')
         page_result = PageService.get_by_name(page_title)
-        print(page_result)
-        return render_template('page.html',p='1',config=config,page_title=page_title,pageType=page_result['page_type'],page=page_result['content'])
-    return '不支持'
+        if page_result['status']:
+            return render_template('page.html',p='1',config=config,page_title=page_title,pageType=page_result['page_type'],page=page_result['content'])
+    return '查询出错'
+
+
 
 @pg.route('/page/create',methods=['POST'])
 def create_page():

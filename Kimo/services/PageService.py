@@ -71,7 +71,6 @@ def edit(page_id,name,content,page_type):
 
 def get_all_page():
     result =page.get_all_page()
-    print(result)
     return result
 
 def get_by_id(page_id):
@@ -107,7 +106,10 @@ def get_by_name(page_name):
         }
     return {
         'status': False,
-        'msg':'查询出错'
+        'msg':'查询出错',
+        'page_name':None,
+        'page_type': None,
+        'content': None
     }
 def get_page_markdown(content):
     return ArticlesService.switch_markdown_to_html(content)

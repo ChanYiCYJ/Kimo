@@ -1,425 +1,571 @@
-{% extends "layout.html" %}
-{% block head %}
-<title>新建/编辑文章</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vditor/dist/index.css">
-<link rel="stylesheet" href="/static/css/vditor.css">
-{% endblock %}
-{% block header %}
-<header
-  class="sticky top-0 z-30
-          bg-white/80 backdrop-blur
-         border-b border-gray-100"
->
-  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-    <div class="flex h-16 items-center justify-between">
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>新建/编辑文章</title>
 
-      <!-- 左侧：标题输入 -->
-      <div class="flex-1 flex items-center">
-        <input
-          id="titleInput"
-          placeholder="文章标题"
-          class="w-full max-w-2xl
-                 bg-transparent
-                 text-2xl tracking-tight
-                 text-gray-900 placeholder-gray-400
-                 focus:outline-none
-                 focus:placeholder-gray-300
-                 transition"
-        />
-      </div>
+  <!-- Tailwind (cdn quick-setup) -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-      <!-- 右侧：操作 -->
-      <div class="flex items-center gap-3">
+  <!-- Vditor CSS & 自定义 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vditor/dist/index.css">
+  <link rel="stylesheet" href="/static/css/vditor.css">
 
-        <!-- 草稿 -->
-        <button
-          class="px-4 py-2 rounded-xl
-                 text-sm font-medium
-                 text-gray-700
-                 bg-gray-100
-                 hover:bg-gray-200
-                 active:scale-[0.98]
-                 transition"
-        >
-          保存草稿
-        </button>
-        {% if post %}
-      <button id="editBtn"
-       class="px-5 py-2 rounded-xl
-                 text-sm font-semibold
-                 bg-black text-white
-                 hover:bg-gray-900
-                 active:scale-[0.98]
-                 transition">编辑</button>
-        {% else %}
-        <!-- 发布 -->
-        <button
-          id="sendBtn"
-          class="px-5 py-2 rounded-xl
-                 text-sm font-semibold
-                 bg-black text-white
-                 hover:bg-gray-900
-                 active:scale-[0.98]
-                 transition"
-        >
-          发布
-        </button>
-        {% endif %}
-      </div>
+  <style>
+    /* 控制侧栏收起/展开的过渡与样式 */
+    .layout-wrap {
+      transition: all 200ms ease;
+    }
+    /* 当 body 上有 .sidebar-collapsed 时调整布局 */
+    .sidebar-collapsed .right-sidebar {
+      transform: translateX(100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    .sidebar-collapsed .main-area {
+      grid-column: 1 / -1; /* 占满整行 */
+    }
 
-    </div>
-  </div>
-</header>
-{% endblock %}
-{% block content %}
-<div class="col-span-1 md:col-span-2 space-y-6">
-            <!-- 编辑器 -->
-  <section>
-    <div id="vditor" class=" min-h-[800px]">
-    </div>
-  </section>
-</div>
-{% endblock %}
-{% block footer %}
-<aside class="space-y-6">
-  <div class="bg-white rounded-2xl  shadow-sm border border-gray-100 p-4">
-    <input rows="2"
-    class="flex flex-wrap w-full rounded-xl border border-gray-200 mb-3 p-4 space-y-6"
-    placeholder="文章简介（无填写则选取开头）"
-    id="descrInput">
-    <!-- 封面上传区 -->
-<section
-  class="group relative rounded-2xl border-2 border-dashed border-gray-200
-         p-6 text-center space-y-5
-         transition
-         hover:border-black/40 hover:bg-gray-50"
->
-  <p class="text-sm text-gray-500 tracking-wide">
-    设置封面图片
-  </p>
+    /* 小的展开按钮（在侧栏收起后显示） */
+    #openSidebarTab {
+      transition: opacity .15s ease, transform .15s ease;
+    }
+    .sidebar-collapsed #openSidebarTab {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0);
+    }
+    #openSidebarTab {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(10px);
+    }
 
-  <!-- 上传图片 -->
-  <label
-    id="imageInput"
-    class="inline-flex items-center justify-center
-           gap-2 cursor-pointer
-           bg-black text-white
-           px-5 py-2.5 rounded-xl
-           text-sm font-medium
-           transition
-           hover:bg-gray-800
-           active:scale-95"
+    /* 侧边栏滑入动画 (desktop) */
+    .right-sidebar {
+      transition: transform 220ms cubic-bezier(.2,.8,.2,1), opacity 200ms ease;
+    }
+
+    /* 小屏幕下侧边栏为折叠下拉样式（保持原有组件结构不变） */
+    @media (max-width: 1024px) {
+      .right-sidebar {
+        transform: translateY(0) !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+      }
+      .sidebar-collapsed .main-area {
+        grid-column: 1 / -1;
+      }
+      /* 隐藏 open tab 在小屏幕 */
+      #openSidebarTab { display: none; }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased">
+
+  <!-- 顶部 header（保留你原有 header 的结构与组件 id/class） -->
+  <header
+    class="sticky top-0 z-30
+            bg-white/80 backdrop-blur
+            border-b border-gray-100"
   >
-    选择本地图片
-    <input
-      id="coverInput"
-      type="file"
-      hidden
-      accept="image/*"
-    />
-  </label>
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex h-16 items-center justify-between">
 
-  <!-- 分割线 -->
-  <div class="flex items-center gap-3 text-xs text-gray-400">
-    <span class="flex-1 h-px bg-gray-200"></span>
-    或使用图片 URL
-    <span class="flex-1 h-px bg-gray-200"></span>
-  </div>
-
-  <!-- URL 输入 -->
-  <input
-    id="coverUrlInput"
-    type="url"
-    placeholder="https://example.com/cover.jpg"
-    class="w-full max-w-md mx-auto
-           rounded-xl border border-gray-200
-           px-4 py-2.5 text-sm
-           focus:outline-none focus:ring-2 focus:ring-black/20"
-  />
-
-  <!-- 预览图 -->
-  <img
-    id="coverPreview"
-    class="hidden mx-auto max-h-48 rounded-xl shadow-md transition"
-  />
-  <!-- 删除按钮（弱化） -->
-      <button
-        id="deleteCoverButton"
-        class="text-sm text-gray-500
-               px-4 py-2 rounded-xl
-               hover:bg-gray-100 hover:text-gray-700
-               transition hidden"
-      >
-        删除图片
-      </button>
-</section>
-
-
-
-    </section>
-
-  </div>
-</aside>
-<aside class="space-y-6 mb-4">
-  <div
-    class="bg-white/80 backdrop-blur rounded-2xl shadow-sm
-           border border-gray-100 p-5 transition hover:shadow-md"
-  >
-
-    <!-- 分类 -->
-    <section class="grid grid-cols-1 gap-4">
-
-      <!-- 标题 + 开关 -->
-      <div class="flex items-center justify-between px-1">
-        <h3 class="text-lg font-semibold text-gray-800 tracking-tight">
-          分类
-        </h3>
-
-        <!-- Toggle -->
-        <label
-          for="CategoryConditions"
-          class="relative inline-flex items-center cursor-pointer
-                 [-webkit-tap-highlight-color:transparent]"
-        >
+        <!-- 左侧：标题输入 -->
+        <div class="flex-1 flex items-center">
           <input
-            type="checkbox"
-            id="CategoryConditions"
-            class="peer sr-only"
-
+            id="titleInput"
+            placeholder="文章标题"
+            class="w-full max-w-2xl
+                   bg-transparent
+                   text-2xl tracking-tight
+                   text-gray-900 placeholder-gray-400
+                   focus:outline-none
+                   focus:placeholder-gray-300
+                   transition"
           />
-
-          <!-- Track -->
-          <span
-            class="w-11 h-6 bg-gray-300 rounded-full
-                   transition peer-checked:bg-gray-900/80"
-          ></span>
-
-          <!-- Thumb -->
-          <span
-            class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full
-                   shadow transition-all
-                   peer-checked:translate-x-5"
-          ></span>
-        </label>
-      </div>
-
-      <!-- 内容区 -->
-      <div
-        id="CategoryList"
-        class="relative hidden animate-fade-in"
-      >
-        <div
-          class="relative mt-2 rounded-xl border border-gray-200
-                 bg-gray-50 focus-within:bg-white
-                 focus-within:border-gray-900
-                 transition"
-        >
-          <input
-            type="text"
-            id="Headline"
-            list="HeadlineList"
-            placeholder="选择或输入分类"
-            class="w-full bg-transparent px-4 py-2.5
-                   text-sm text-gray-800 placeholder-gray-400
-                   outline-none rounded-xl
-                   [&::-webkit-calendar-picker-indicator]:opacity-0"
-          />
-
-          <!-- 下拉图标 -->
-          <span
-            class="pointer-events-none absolute inset-y-0 right-3
-                   flex items-center text-gray-500"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-4 h-4"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="m19.5 8.25-7.5 7.5-7.5-7.5"
-              />
-            </svg>
-          </span>
         </div>
+
+        <!-- 右侧：操作（在这里插入“收起侧栏”按钮，且不改动你原有按钮的 id/class） -->
+        <div class="flex items-center gap-3">
+
+          <!-- 新增：侧栏收起/展开按钮 -->
+          <button id="toggleSidebarBtn"
+                  title="收起/展开侧栏"
+                  class="px-3 py-2 rounded-xl text-sm bg-white border border-gray-200 hover:bg-gray-100 active:scale-[0.98] transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M8 6v12M16 6v12M3 12h18" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <!-- 草稿 -->
+          <button
+            class="hidden px-4 py-2 rounded-xl
+                   text-sm font-medium
+                   text-gray-700
+                   bg-gray-100
+                   hover:bg-gray-200
+                   active:scale-[0.98]
+                   transition"
+          >
+            保存草稿
+          </button>
+          {% if post %}
+        <button id="editBtn"
+         class="px-5 py-2 rounded-xl
+                   text-sm font-semibold
+                   bg-black text-white
+                   hover:bg-gray-900
+                   active:scale-[0.98]
+                   transition">编辑</button>
+          {% else %}
+          <!-- 发布 -->
+          <button
+            id="sendBtn"
+            class="px-5 py-2 rounded-xl
+                   text-sm font-semibold
+                   bg-black text-white
+                   hover:bg-gray-900
+                   active:scale-[0.98]
+                   transition"
+          >
+            发布
+          </button>
+          {% endif %}
+        </div>
+
       </div>
+    </div>
+  </header>
 
-      <!-- datalist -->
-      <datalist id="HeadlineList">
-        {% for category in categories %}
-          <option value="{{ category.name }}"></option>
-        {% endfor %}
-      </datalist>
+  <!-- 主体：两列布局（左编辑区、右侧边栏）-->
+  <main class="mx-auto max-w-8xl layout-wrap" id="appLayout">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 relative h-full">
 
-    </section>
+      <!-- 编辑区域：占两栏（或大屏幕下 2/3 宽）-->
+      <section class="w-full h-full lg:col-span-2 main-area">
+        <div class="col-span-1 md:col-span-2 space-y-6 h-full flex flex-col">
+          <!-- 编辑器 -->
+          <section class="flex-1">
+            <div id="vditor" class="min-h-[890px] bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- 右侧侧边栏（封面、简介、分类等）-->
+      <aside class="space-y-6 right-sidebar m-10 mt-5" id="rightSidebar">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+          <input rows="2"
+            class="flex flex-wrap w-full rounded-xl border border-gray-200 mb-3 p-4 space-y-6"
+            placeholder="文章简介（无填写则选取开头）"
+            id="descrInput">
+          <!-- 封面上传区 -->
+          <section
+            class="group relative rounded-2xl border-2 border-dashed border-gray-200
+                   p-6 text-center space-y-5
+                   transition
+                   hover:border-black/40 hover:bg-gray-50"
+          >
+            <p class="text-sm text-gray-500 tracking-wide">
+              设置封面图片
+            </p>
+
+            <!-- 上传图片 -->
+            <label
+              id="imageInput"
+              class="inline-flex items-center justify-center
+                     gap-2 cursor-pointer
+                     bg-black text-white
+                     px-5 py-2.5 rounded-xl
+                     text-sm font-medium
+                     transition
+                     hover:bg-gray-800
+                     active:scale-95"
+            >
+              选择本地图片
+              <input
+                id="coverInput"
+                type="file"
+                hidden
+                accept="image/*"
+              />
+            </label>
+
+            <!-- 分割线 -->
+            <div class="flex items-center gap-3 text-xs text-gray-400">
+              <span class="flex-1 h-px bg-gray-200"></span>
+              或使用图片 URL
+              <span class="flex-1 h-px bg-gray-200"></span>
+            </div>
+
+            <!-- URL 输入 -->
+            <input
+              id="coverUrlInput"
+              type="url"
+              placeholder="https://example.com/cover.jpg"
+              class="w-full max-w-md mx-auto
+                     rounded-xl border border-gray-200
+                     px-4 py-2.5 text-sm
+                     focus:outline-none focus:ring-2 focus:ring-black/20"
+            />
+
+            <!-- 预览图 -->
+            <img
+              id="coverPreview"
+              class="hidden mx-auto max-h-48 rounded-xl shadow-md transition"
+            />
+            <!-- 删除按钮（弱化） -->
+            <button
+              id="deleteCoverButton"
+              class="text-sm text-gray-500
+                     px-4 py-2 rounded-xl
+                     hover:bg-gray-100 hover:text-gray-700
+                     transition hidden"
+            >
+              删除图片
+            </button>
+          </section>
+        </div>
+
+        <div
+          class="bg-white/80 backdrop-blur rounded-2xl shadow-sm
+                 border border-gray-100 p-5 transition hover:shadow-md"
+        >
+          <!-- 分类 -->
+          <section class="grid grid-cols-1 gap-4">
+
+            <!-- 标题 + 开关 -->
+            <div class="flex items-center justify-between px-1">
+              <h3 class="text-lg font-semibold text-gray-800 tracking-tight">
+                分类
+              </h3>
+
+              <!-- Toggle -->
+              <label
+                for="CategoryConditions"
+                class="relative inline-flex items-center cursor-pointer
+                       [-webkit-tap-highlight-color:transparent]"
+              >
+                <input
+                  type="checkbox"
+                  id="CategoryConditions"
+                  class="peer sr-only"
+
+                />
+
+                <!-- Track -->
+                <span
+                  class="w-11 h-6 bg-gray-300 rounded-full
+                         transition peer-checked:bg-gray-900/80"
+                ></span>
+
+                <!-- Thumb -->
+                <span
+                  class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full
+                         shadow transition-all
+                         peer-checked:translate-x-5"
+                ></span>
+              </label>
+            </div>
+
+            <!-- 内容区 -->
+            <div
+              id="CategoryList"
+              class="relative hidden animate-fade-in"
+            >
+              <div
+                class="relative mt-2 rounded-xl border border-gray-200
+                       bg-gray-50 focus-within:bg-white
+                       focus-within:border-gray-900
+                       transition"
+              >
+                <input
+                  type="text"
+                  id="Headline"
+                  list="HeadlineList"
+                  placeholder="选择或输入分类"
+                  class="w-full bg-transparent px-4 py-2.5
+                         text-sm text-gray-800 placeholder-gray-400
+                         outline-none rounded-xl
+                         [&::-webkit-calendar-picker-indicator]:opacity-0"
+                />
+
+                <!-- 下拉图标 -->
+                <span
+                  class="pointer-events-none absolute inset-y-0 right-3
+                         flex items-center text-gray-500"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-4 h-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="m19.5 8.25-7.5 7.5-7.5-7.5"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </div>
+
+            <!-- datalist -->
+            <datalist id="HeadlineList">
+              {% for category in categories %}
+                <option value="{{ category.name }}"></option>
+              {% endfor %}
+            </datalist>
+
+          </section>
+        </div>
+
+        {% if post %}
+        <div id="data-container" data-info='{{ post | tojson | safe }}'></div>
+        {% endif %}
+      </aside>
+
+      <!-- 在侧栏收起时显示的展开 tab（默认隐藏，收起时显示） -->
+      <button id="openSidebarTab"
+              title="展开侧栏"
+              class="fixed right-2 top-1/3 z-50 rounded-l-full p-2 shadow-md bg-white border border-gray-200 hidden lg:block"
+              style="display:block; opacity:0;">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+    </div>
+  </main>
+
+  <!-- Modal（保留原 modal） -->
+  <div class="fixed inset-0 bg-black/40 flex items-center justify-center hidden"
+       id="modal">
+      <div class="bg-white rounded-xl w-80 p-6 text-center">
+          <h3 class="font-semibold mb-3">提示</h3>
+          <p class="text-gray-600 mb-4" id="modal-text"></p>
+          <button class="px-4 py-2 bg-gray-200 rounded-lg"
+                  onclick="closeModal()">
+              我知道了
+          </button>
+    </div>
   </div>
-</aside>
-{% if post %}
-<div id="data-container" data-info='{{ post | tojson | safe }}'></div>
-{% endif %}
-</div>
-{% endblock %}
-{% block other %}
-<!-- Modal -->
-<div class="fixed inset-0 bg-black/40 flex items-center justify-center hidden"
-     id="modal">
-    <div class="bg-white rounded-xl w-80 p-6 text-center">
-        <h3 class="font-semibold mb-3">提示</h3>
-        <p class="text-gray-600 mb-4" id="modal-text"></p>
-        <button class="px-4 py-2 bg-gray-200 rounded-lg"
-                onclick="closeModal()">
-            我知道了
-        </button>
-  </div>
-</div>
-{% endblock %}
-{% block script %}
-<script>
-function showModal(message) {
-  document.getElementById('modal-text').innerText = message
-  document.getElementById('modal').classList.remove('hidden')
-}
 
-function closeModal() {
-  document.getElementById('modal').classList.add('hidden')
-}
-</script>
-<script>
-  const toggle = document.getElementById('CategoryConditions')
+  <!-- 原始脚本与初始化（保留、不改动） -->
+  <script>
+  function showModal(message) {
+    document.getElementById('modal-text').innerText = message
+    document.getElementById('modal').classList.remove('hidden')
+  }
 
-  toggle.addEventListener('change', (e) => {
-    if (e.target.checked) {
-      document.getElementById('CategoryList').classList.remove('hidden')
-    } else {
-      document.getElementById('CategoryList').classList.add('hidden')
-    }
-  })
-</script>
+  function closeModal() {
+    document.getElementById('modal').classList.add('hidden')
+  }
+  </script>
+  <script>
+    const toggle = document.getElementById('CategoryConditions')
 
-<!-- Vditor JS -->
-<script src="https://cdn.jsdelivr.net/npm/vditor/dist/index.min.js"></script>
-{% if post %}
-<script src="/static/js/getEdit.js"></script>
-{% endif %}
-<script>
-  const vditor = new Vditor('vditor', {
-      height: 420,
-      placeholder: '在这里输入 Markdown 内容...',
-       upload: {
-      url: '/upload/image/vditor',   // ⭐ 上传接口
-      fieldName: 'file',          // ⭐ 后端接收的字段名
-      max: 5 * 1024 * 1024,        // 5MB
-      accept: 'image/*',
+    toggle.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        document.getElementById('CategoryList').classList.remove('hidden')
+      } else {
+        document.getElementById('CategoryList').classList.add('hidden')
+      }
+    })
+  </script>
+
+  <!-- Vditor JS -->
+  <script src="https://cdn.jsdelivr.net/npm/vditor/dist/index.min.js"></script>
+  {% if post %}
+  <script src="/static/js/getEdit.js"></script>
+  {% endif %}
+
+  <script>
+    const vditor = new Vditor('vditor', {
+        height: 420,
+        placeholder: '在这里输入 Markdown 内容...',
+         upload: {
+        url: '/upload/image/vditor',   // ⭐ 上传接口
+        fieldName: 'file',          // ⭐ 后端接收的字段名
+        max: 5 * 1024 * 1024,        // 5MB
+        accept: 'image/*',
+         },
+         toolbar: [
+        'bold',
+        'italic',
+        'strike',
+        'headings',
+        'quote',
+        'code',
+        'inline-code',
+        'list',
+        'ordered-list',
+        'link',
+        'upload',
+        'preview',
+        'fullscreen'
+      ],
+        toolbarConfig: { pin: true },
+         cache: {
+      enable: false,
        },
-       toolbar: [
-      'bold',
-      'italic',
-      'strike',
-      'headings',
-      'quote',
-      'code',
-      'inline-code',
-      'list',
-      'ordered-list',
-      'link',
-      'upload',
-      'preview',
-      'fullscreen'
-    ],
-      toolbarConfig: { pin: true },
-       cache: {
-    enable: false,
-     },
-    after() {
-    {% if post %}
-    if (POST_DATA){
-      console.log(POST_DATA);
-      vditor.setValue(POST_DATA.content || '');
+      after() {
+      {% if post %}
+      if (POST_DATA){
+        console.log(POST_DATA);
+        vditor.setValue(POST_DATA.content || '');
 
+      }
+      {% endif %}
+    },
+      });
+  </script>
+
+  <script src="/static/js/createArticle.js"></script>
+  <script src="/static/js/editArticle.js"></script>
+
+  <script>
+      const fileInput = document.getElementById("coverInput");
+  const urlInput = document.getElementById("coverUrlInput");
+  const preview = document.getElementById("coverPreview");
+  
+  let coverUrl = null; // 最终提交用
+
+  /* ===== 本地图片 ===== */
+  fileInput.addEventListener("change", async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    // 1️⃣ 预览
+    preview.src = URL.createObjectURL(file);
+    preview.classList.remove("hidden");
+
+    // 2️⃣ 清空 URL 输入
+    urlInput.value = "";
+
+    // 3️⃣ 上传
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/upload/image", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await res.json();
+      if (!data.status) throw new Error(data.msg);
+
+      coverUrl = data.url;
+      console.log("封面上传成功:", coverUrl);
+
+    } catch (err) {
+      alert(err.message || "封面上传失败");
+      coverUrl = null;
     }
-    {% endif %}
-  },
-    });
-
-
-
-</script>
-<script src="/static/js/createArticle.js"></script>
-<script src="/static/js/editArticle.js"></script>
-<script >
-    const fileInput = document.getElementById("coverInput");
-const urlInput = document.getElementById("coverUrlInput");
-const preview = document.getElementById("coverPreview");
-
-let coverUrl = null; // 最终提交用
-
-/* ===== 本地图片 ===== */
-fileInput.addEventListener("change", async () => {
-  const file = fileInput.files[0];
-  if (!file) return;
-
-  // 1️⃣ 预览
-  preview.src = URL.createObjectURL(file);
-  preview.classList.remove("hidden");
-
-  // 2️⃣ 清空 URL 输入
-  urlInput.value = "";
-
-  // 3️⃣ 上传
-  const formData = new FormData();
-  formData.append("file", file);
-
-  try {
-    const res = await fetch("/upload/image", {
-      method: "POST",
-      body: formData
-    });
-
-    const data = await res.json();
-    if (!data.status) throw new Error(data.msg);
-
-    coverUrl = data.url;
-    console.log("封面上传成功:", coverUrl);
-
-  } catch (err) {
-    alert(err.message || "封面上传失败");
-    coverUrl = null;
-  }
-});
-
-/* ===== 图片 URL ===== */
-urlInput.addEventListener("input", () => {
-  const url = urlInput.value.trim();
-  if (!url) {
-    preview.classList.add("hidden");
-    coverUrl = null;
-    return;
-  }
-
-  // 1️⃣ 预览
-  preview.src = url;
-  preview.classList.remove("hidden");
-
-  // 2️⃣ 清空文件
-  fileInput.value = "";
-
-  // 3️⃣ 设置最终封面
-  coverUrl = url;
-});
-</script>
-<!-- ===== 设置删除封面按钮事件 ===== -->
-<script>
-  document.getElementById('deleteCoverButton').addEventListener('click', async () => {
-     document.getElementById('imageInput').classList.remove('hidden')
-      document.getElementById('coverUrlInput').classList.remove('hidden')
-
-      document.getElementById('deleteCoverButton').classList.add('hidden');
-      document.getElementById('coverPreview').classList.add('hidden');
-      document.getElementById('coverPreview').removeAttribute('src');
   });
-</script>
-{% endblock %}
+
+  /* ===== 图片 URL ===== */
+  urlInput.addEventListener("input", () => {
+    const url = urlInput.value.trim();
+    if (!url) {
+      preview.classList.add("hidden");
+      coverUrl = null;
+      return;
+    }
+
+    // 1️⃣ 预览
+    preview.src = url;
+    preview.classList.remove("hidden");
+
+    // 2️⃣ 清空文件
+    fileInput.value = "";
+
+    // 3️⃣ 设置最终封面
+    coverUrl = url;
+  });
+  </script>
+
+  <!-- ===== 设置删除封面按钮事件 ===== -->
+  <script>
+    document.getElementById('deleteCoverButton').addEventListener('click', async () => {
+       document.getElementById('imageInput').classList.remove('hidden')
+        document.getElementById('coverUrlInput').classList.remove('hidden')
+
+        document.getElementById('deleteCoverButton').classList.add('hidden');
+        document.getElementById('coverPreview').classList.add('hidden');
+        document.getElementById('coverPreview').removeAttribute('src');
+    });
+  </script>
+
+  <!-- ===== 侧栏收起/展开交互逻辑（保持组件不变，只添加控制行为） ===== -->
+  <script>
+    (function(){
+      const body = document.body;
+      const toggleBtn = document.getElementById('toggleSidebarBtn');
+      const openTab = document.getElementById('openSidebarTab');
+      const rightSidebar = document.getElementById('rightSidebar');
+
+      // 初始状态：展开。用户点击后在 body 上切换 .sidebar-collapsed
+      function collapseSidebar() {
+        body.classList.add('sidebar-collapsed');
+        // 显示展开 tab
+        openTab.style.display = 'block';
+        // small delay 用于触发 css transition
+        setTimeout(() => { openTab.style.opacity = '1'; }, 20);
+      }
+      function expandSidebar() {
+        body.classList.remove('sidebar-collapsed');
+        // 隐藏展开 tab
+        openTab.style.opacity = '0';
+        setTimeout(() => { openTab.style.display = 'none'; }, 160);
+      }
+
+      // 点击 header 的按钮切换
+      toggleBtn.addEventListener('click', () => {
+        if (body.classList.contains('sidebar-collapsed')) {
+          expandSidebar();
+        } else {
+          collapseSidebar();
+        }
+        // 触发一次 vditor resize（如果编辑器需要响应）
+        if (window.vditor && typeof window.vditor.resize === 'function') {
+          try { window.vditor.resize(); } catch(e) {}
+        }
+      });
+
+      // 点击右侧展开 tab
+      openTab.addEventListener('click', () => {
+        expandSidebar();
+        if (window.vditor && typeof window.vditor.resize === 'function') {
+          try { window.vditor.resize(); } catch(e) {}
+        }
+      });
+
+      // 当窗口尺寸变小时，自动展开侧栏（避免遮挡）
+      window.addEventListener('resize', () => {
+        if (window.innerWidth < 1024) {
+          expandSidebar();
+        }
+      });
+
+      // 初始：如果屏幕小则展开
+      if (window.innerWidth < 1024) {
+        expandSidebar();
+      } else {
+        // keep expanded by default on desktop
+        openTab.style.display = 'none';
+      }
+
+    })();
+  </script>
+
+</body>
+</html>

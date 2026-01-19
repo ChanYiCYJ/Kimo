@@ -56,13 +56,16 @@ def get_articles_lists(page):
     page_id=page-1
     offset = page_id * perpage
     result = articles.get_articles_lists(limit=perpage, offset=offset)
+    
     all_articles_length = articles.get_all_articles_count()['COUNT(*)']
     total_page = math.ceil(all_articles_length / perpage)
     return {
-        "articles": result,
-        "total_page": total_page,
-        "page_id" : page_id
-    }
+            "status": True,
+            "articles": result,
+            "total_page": total_page,
+            "page_id" : page_id
+        }
+    
 
 def send_article(title, content, category_name, description, cover_image,id):
     # 1. 基础校验

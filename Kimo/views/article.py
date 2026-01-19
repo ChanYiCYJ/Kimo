@@ -12,7 +12,6 @@ def index():
     category_all = Article.get_all_categories()
     result =Article.get_articles_lists(page)
     page_id=result['page_id']+1
-    print(page_id)
     articles =result['articles']
     tag_all = Article.get_all_tags()
     total_articles =result['total_page']

@@ -13,7 +13,7 @@ def login():
     
     if result['status'] == 2:
         session['user_role']=result['status']
-        return redirect(url_for("article.manage"))
+        return redirect(url_for("dashboard.index"))
     print(result['msg'])
     return redirect(url_for("article.index"))
 
