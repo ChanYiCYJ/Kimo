@@ -1,7 +1,7 @@
 from Kimo.models import page
 import json
 from Kimo.services import ArticlesService
-support_type={'markdown','html','list'}
+support_type={'markdown','html','list','link'}
 def create(name,content,page_type):
     check =page.get_page_by_name(name)
     if check:

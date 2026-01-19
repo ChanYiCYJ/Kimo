@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, request, session, jsonify,redirect,url_for
-
 from Kimo.config import load_config
 from Kimo.services import PageService
 pg =Blueprint('page',__name__)

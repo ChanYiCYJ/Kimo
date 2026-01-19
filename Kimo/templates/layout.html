@@ -132,7 +132,7 @@
           {% if pageList %}
           {% for page in pageList %}
          <a
-  href="/{{ page.name }}"
+  {% if not page.type =='link' %}href=" /{{ page.name }}"{% else %}href="{{ page.content }}"{% endif %}
   class="
     group
     mt-4
@@ -200,7 +200,7 @@
 
           {% endfor %}
           {% else %}
-          <span class="text-gray-400 text-sm">暂无Page</span>
+          <span class="ml-2 text-gray-400 text-sm">暂无Page</span>
           {% endif %}
       </div>
       <div class="bg-white/80 backdrop-blur {% if p %}hidden{% endif %} rounded-3xl shadow-sm p-6">
