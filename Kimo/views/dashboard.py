@@ -8,13 +8,15 @@ def index():
     if request.method=='GET':  
         config =load_config('app','config')
         page_type=request.args.get("type", type=str)
-        print(page_type,'dfddd')
+        id=request.args.get("id", type=int)
+        print(page_type,id,'dfddd')
         if not page_type:
             page_type ='home'
-        if page_type =='home':
+        if page_type =='manageArticle':
+            categories = Article.get_all_categories()
             article_all = Article.get_all_articles()
-            return render_template("dashboard.html",post=article_all,editor='1',config=config,pageType=page_type)
-        return render_template("dashboard.html",editor='1',config=config,pageType=page_type)
+            return render_template("dashboard.html",post=article_all,editor='1',categories=categories,config=config,pageType=page_type)
+        return render_template("dashboard.html",editor='1',id=id,config=config,pageType=page_type)
             
 
 
