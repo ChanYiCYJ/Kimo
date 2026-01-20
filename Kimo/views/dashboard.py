@@ -19,6 +19,8 @@ def index():
                 article_all = Article.get_all_articles()
                 return render_template("dashboard.html",post=article_all,editor='1',categories=categories,config=config,pageType=page_type)
             return render_template("dashboard.html",editor='1',id=id,config=config,pageType=page_type)
+        
+    return redirect(url_for('account.login'))
             
 
 
