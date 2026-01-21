@@ -11,7 +11,7 @@
   <!-- Vditor CSS & 自定义 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vditor/dist/index.css">
   <link rel="stylesheet" href="/static/css/vditor.css">
-
+  <link rel="stylesheet" href="/static/css/loading.css">
   <style>
     /* 控制侧栏收起/展开的过渡与样式 */
     .layout-wrap {
@@ -142,11 +142,16 @@
   </header>
 
   <!-- 主体：两列布局（左编辑区、右侧边栏）-->
-  <main class="mx-auto max-w-8xl layout-wrap" id="appLayout">
+  <main class="bg-white mx-auto max-w-8xl layout-wrap" id="appLayout">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 relative h-full">
 
       <!-- 编辑区域：占两栏（或大屏幕下 2/3 宽）-->
       <section class="w-full h-full lg:col-span-2 main-area">
+        <!-- ===== Loading ===== -->
+<div id="global-loading"
+     class="fixed inset-0 z-[9999] flex items-center justify-center bg-white">
+  <div class="w-8 h-8 border-4 border-gray-300 border-t-gray-700 rounded-full animate-spin"></div>
+</div>
         <div class="col-span-1 md:col-span-2 space-y-6 h-full flex flex-col">
           <!-- 编辑器 -->
           <section class="flex-1">
@@ -157,8 +162,8 @@
       </section>
 
       <!-- 右侧侧边栏（封面、简介、分类等）-->
-      <aside class="space-y-6 right-sidebar m-10 mt-5" id="rightSidebar">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+      <aside class="space-y-6  right-sidebar m-10 mt-5" id="rightSidebar">
+        <div class="bg-white ">
           <input rows="2"
             class="flex flex-wrap w-full rounded-xl border border-gray-200 mb-3 p-4 space-y-6"
             placeholder="文章简介（无填写则选取开头）"
@@ -230,10 +235,10 @@
             </button>
           </section>
         </div>
-
+        <br/>
         <div
-          class="bg-white/80 backdrop-blur rounded-2xl shadow-sm
-                 border border-gray-100 p-5 transition hover:shadow-md"
+          class="bg-white/80 backdrop-blur  
+                 "
         >
           <!-- 分类 -->
           <section class="grid grid-cols-1 gap-4">
@@ -357,7 +362,8 @@
           </button>
     </div>
   </div>
-
+<!-- ===== JS ===== -->
+<script src="/static/js/loading.js" ></script>
   <!-- 原始脚本与初始化（保留、不改动） -->
   <script>
   function showModal(message) {
