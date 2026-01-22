@@ -162,7 +162,7 @@
       </section>
 
       <!-- 右侧侧边栏（封面、简介、分类等）-->
-      <aside class="space-y-6  right-sidebar m-10 mt-5" id="rightSidebar">
+      <aside class="space-y-6  right-sidebar m-5 mt-5" id="rightSidebar">
         <div class="bg-white ">
           <input rows="2"
             class="flex flex-wrap w-full rounded-xl border border-gray-200 mb-3 p-4 space-y-6"
@@ -471,7 +471,7 @@
 
       coverUrl = data.url;
       console.log("封面上传成功:", coverUrl);
-
+      document.getElementById('deleteCoverButton').classList.remove('hidden');
     } catch (err) {
       alert(err.message || "封面上传失败");
       coverUrl = null;

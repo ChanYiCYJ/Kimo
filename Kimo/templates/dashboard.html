@@ -21,7 +21,7 @@
   <div>
     <a href="/" class=" inline-flex size-16 items-center justify-center">
       <span class="grid size-10 place-content-center rounded-xl bg-gray-100 text-xs text-gray-600">
-        <img src="{{ config.avatar }}">
+        <img class="rounded-xl" src="{{ config.avatar }}">
       </span>
     </a>
 
@@ -104,7 +104,7 @@
     {% if pageType == 'home' %}
       <span>主页还没写</span>
     {% endif %}
-    {% if pageType == 'createArticle' %}
+    {% if pageType == 'createArticle' or pageType =='editArticle' %}
       {% include "createArticle.html" %}
     {% endif %}
     {% if pageType == 'manageArticle' %}

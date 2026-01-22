@@ -156,13 +156,3 @@ def upload_image_by_vditor():
             result=Article.upload_image_by_vditor(file)
             return result 
     return jsonify({'message': '无权'}),500 
-        
-@bg.route('/dashboard/article/manage',methods=['GET'])
-def manage():
-    config = load_config('app', 'config')
-    check_user = session.get('user_role')
-    if check_user == 2:
-        if request.method =='GET':
-            article_all = Article.get_all_articles()
-            return render_template("article_manage.html",config=config ,post=article_all)
-    return redirect(url_for('account.login'))

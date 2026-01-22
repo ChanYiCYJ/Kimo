@@ -57,8 +57,11 @@ def get_articles_lists(page):
     offset = page_id * perpage
     result = articles.get_articles_lists(limit=perpage, offset=offset)
     
-    all_articles_length = articles.get_all_articles_count()['COUNT(*)']
-    total_page = math.ceil(all_articles_length / perpage)
+    all_articles_length = articles.get_all_articles_count()
+    if all_articles_length:
+        total_page = math.ceil(all_articles_length['COUNT(*)'] / perpage)
+    else:
+        total_page =1
     return {
             "status": True,
             "articles": result,
