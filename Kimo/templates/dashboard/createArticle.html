@@ -142,19 +142,22 @@
   </header>
 
   <!-- 主体：两列布局（左编辑区、右侧边栏）-->
-  <main class="bg-white mx-auto max-w-8xl layout-wrap" id="appLayout">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 relative h-full">
+  <main class="bg-white mx-auto max-w-8xl layout-wrap h-full" id="appLayout">
+    <!-- 主要改动：lg 时使用 4 等分网格，编辑区占 3 / 侧栏占 1 -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 relative h-full">
 
-      <!-- 编辑区域：占两栏（或大屏幕下 2/3 宽）-->
-      <section class="w-full h-full lg:col-span-2 main-area">
+      <!-- 编辑区域：占三栏（大屏时 3/4 宽）-->
+      <section class="w-full h-full lg:col-span-3 main-area">
         <!-- ===== Loading ===== -->
-<div id="global-loading"
-     class="fixed inset-0 z-[9999] flex items-center justify-center bg-white">
-  <div class="w-8 h-8 border-4 border-gray-300 border-t-gray-700 rounded-full animate-spin"></div>
-</div>
+        <div id="global-loading"
+             class="fixed inset-0 z-[9999] flex items-center justify-center bg-white">
+          <div class="w-8 h-8 border-4 border-gray-300 border-t-gray-700 rounded-full animate-spin"></div>
+        </div>
+
         <div class="col-span-1 md:col-span-2 space-y-6 h-full flex flex-col">
           <!-- 编辑器 -->
           <section class="flex-1">
+            <!-- 保留原有 vditor 容器，min-height 在上方 CSS 中控制 -->
             <div id="vditor" class="min-h-[890px] bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             </div>
           </section>

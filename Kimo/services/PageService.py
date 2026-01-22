@@ -25,7 +25,7 @@ def create(name,content,page_type):
             'msg':'Page不支持该格式'
         }
     result =page.create_page(name,content,page_type)
-    if result['status']:
+    if result:
         return {
             'status': True,
             'msg':'Created Page'
@@ -119,3 +119,15 @@ def get_page_markdown(content):
 def get_page_list(content):
     lists = json.loads(content)
     return lists
+
+def delete(page_id):
+    result=page.delete_page(page_id)
+    if not result:
+        return {
+            'status': False,
+            'msg':'删除失败'
+        } 
+    return {
+        'status':True,
+        'msg':'删除成功'
+    }

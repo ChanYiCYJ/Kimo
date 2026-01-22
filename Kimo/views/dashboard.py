@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, request, session, jsonify,redirect,url_for
 from Kimo.config import load_config
 from Kimo.services import ArticlesService as Article
+from Kimo.services import PageService as Page
+SENDTYPE=['create','update','delete']
 ds=Blueprint('dashboard',__name__)
 
 @ds.route('/dashboard',methods=['GET'])
@@ -40,6 +42,23 @@ def index():
             
 
 
-@ds.route('/dashboard/pages',methods=['GET'])
-def pages_manage():
-    return 'aaaa'
+
+@ds.route('/dashboard/pages',methods=['POST'])
+def page_control():
+    id:int=request.json.get('id')
+    methods_type=request.json.get('mtype')
+    title=request.json.get('title')
+    content=request.json.get('content')
+    type=request.json.get('type')
+    match methods_type:
+        case 'create':
+            return Page.create(title,content,type)
+        case 'edit':  
+            return Page.edit(id,title,content,type)
+        case 'delete':
+            return Page.delete(id)
+        case _:
+            return {
+                "status":0,
+                "msg":'不支持该格式'
+            }

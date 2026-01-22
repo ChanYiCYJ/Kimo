@@ -105,10 +105,10 @@
       <span>主页还没写</span>
     {% endif %}
     {% if pageType == 'createArticle' or pageType =='editArticle' %}
-      {% include "createArticle.html" %}
+      {% include "/dashboard/createArticle.html" %}
     {% endif %}
     {% if pageType == 'manageArticle' %}
-      {% include "article_manage.html" %}
+      {% include "/dashboard/article_manage.html" %}
     {% endif %}
     {% if pageType == 'Setting' %}
       <span>还没思路</span>
