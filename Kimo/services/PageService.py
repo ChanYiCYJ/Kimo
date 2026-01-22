@@ -79,31 +79,20 @@ def get_by_id(page_id):
 def get_by_name(page_name):
     page_result = page.get_page_by_name(page_name)
     if page_result:
-        if page_result['type']=='list':
-            content = get_page_list(page_result['content'])
-            return {
-                'status': True,
-                'msg': '查询成功',
-                'page_name': page_result['name'],
-                'page_type': page_result['type'],
-                'content': content
-            }
-        if page_result['type']=='markdown':
-            content = get_page_markdown(page_result['content'])
-            return {
-                'status': True,
-                'msg': '查询成功',
-                'page_name': page_result['name'],
-                'page_type': page_result['type'],
-                'content': content
-            }
+        match page_result['type']:
+            case 'list':
+                content = get_page_list(page_result['content'])
+            case 'markdown':
+                content = get_page_markdown(page_result['content']) 
+            case _:
+                content = page_result['content']
         return {
-            'status': True,
-            'msg': '查询成功',
-            'page_name': page_result['name'],
-            'page_type': page_result['type'],
-            'content': page_result['content']
-        }
+                    'status': True,
+                    'msg': '查询成功',
+                    'page_name': page_result['name'],
+                    'page_type': page_result['type'],
+                    'content': content
+                }
     return {
         'status': False,
         'msg':'查询出错',

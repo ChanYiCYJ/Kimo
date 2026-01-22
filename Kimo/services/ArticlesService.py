@@ -131,7 +131,7 @@ def send_article(title, content, category_name, description, cover_image,id):
 
 def edit_article(id):
     return articles.get_article_by_id(id)
-
+    
 def delete_article(id):
     check = articles.get_article_by_id(id)
     if not check:
@@ -166,3 +166,12 @@ def upload_image_by_vditor(file):
                 }
             }
         }
+    
+def search(text):
+   result=articles.get_article_by_title(text)
+   if not result:
+       return {
+           "status":0,
+           "msg":"查询不到数据"
+       }
+   return result 

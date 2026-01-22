@@ -156,3 +156,9 @@ def upload_image_by_vditor():
             result=Article.upload_image_by_vditor(file)
             return result 
     return jsonify({'message': '无权'}),500 
+
+@bg.route('/article/search',methods=['POST'])
+def search():
+    if request.method == 'POST':
+        text =request.json.get('text')
+        return Article.search(text)

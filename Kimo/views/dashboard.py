@@ -12,32 +12,43 @@ def index():
         if request.method=='GET':  
             config =load_config('app','config')
             page_type=request.args.get("type", type=str)
-            if not page_type:
-                page_type ='home'
-            if page_type =='manageArticle':
-                categories = Article.get_all_categories()
-                article_all = Article.get_all_articles()
-                return render_template("dashboard.html",post=article_all,editor='1',categories=categories,config=config,pageType=page_type)
-            if page_type =='editArticle':
-                edit_id=request.args.get("id", type=int)
-                result = Article.edit_article(edit_id)
-                print(result)
-                if not result:
-                    return '查询不到文章'
-                ca_id= result['category_id']
-                ca_name= Article.get_category_name_by_id(ca_id)
-                print(result)
-                post = {
-                'id' :result['id'],
-                'title': result['title'],
-                'content': result['content'],
-                'category_name': ca_name,
-                'category_id': ca_id,
-                'cover_url': result['cover_image'],
-            }
-                return render_template("dashboard.html",config=config,pageType=page_type,post=post)
-            return render_template("dashboard.html",editor='1',id=id,config=config,pageType=page_type)
-        
+            match page_type:
+                case 'manageArticle':
+                    categories = Article.get_all_categories()
+                    article_all = Article.get_all_articles()
+                    return render_template("dashboard.html",post=article_all,editor='1',categories=categories,config=config,pageType=page_type)
+                case 'editArticle':
+                    edit_id=request.args.get("id", type=int)
+                    result = Article.edit_article(edit_id)
+                    print(result)
+                    if not result:
+                        return '查询不到文章'
+                    ca_id= result['category_id']
+                    ca_name= Article.get_category_name_by_id(ca_id)
+                    print(result)
+                    post = {
+                    'id' :result['id'],
+                    'title': result['title'],
+                    'content': result['content'],
+                    'category_name': ca_name,
+                    'category_id': ca_id,
+                    'cover_url': result['cover_image'],
+                }
+                    return render_template("dashboard.html",config=config,pageType=page_type,post=post)
+                case 'createArticle':
+                    categories = Article.get_all_categories()
+                    return render_template("dashboard.html",editor='1',categories=categories,id=id,config=config,pageType=page_type)
+                case 'pageManage':
+                    categories = Article.get_all_categories()
+                    page_list=Page.get_all_page()
+                    print(page_list)
+                    return render_template("dashboard.html",editor='1',id=id,categories=categories,pages=page_list,config=config,pageType=page_type)
+                
+                case _:
+                    page_type ='home'
+            return render_template("dashboard.html",config=config,pageType=page_type)
+
+
     return redirect(url_for('account.login'))
             
 
