@@ -14,7 +14,7 @@
     <link rel="icon" href="{{ config.avatar }}" type="image/x-icon">
 </head>
 
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-white text-gray-800">
     
     <div class="flex min-h-screen bg-gray-50">
   <div class="flex h-screen w-16 flex-col justify-between border-e border-gray-100 bg-white">
@@ -110,15 +110,33 @@ text-blue-700{% endif %} bi bi-archive" viewBox="0 0 16 16">
   </div>
 </div>
 <!-- Content Area -->
-<main class="flex-1 h-screen overflow-y-auto">
+<main class="m-2 rounded-2xl flex-1 ml-5 bg-white h-screen overflow-y-auto">
   
-  <div class="mx-auto ">
+  <div class="mx-auto ml-7 ">
     {% if pageType == 'home' %}
       <span>主页还没写</span>
     {% endif %}
     {% if pageType == 'createArticle' or pageType =='editArticle' %}
+
+        <div class="ml-7 m-3 rounded-2xl bg-white space-y-1 p-1 ">
+    <!-- Tabs -->
+      <div class="m-3 w-full max-w-sm ">
+        <div class="flex bg-gray-100 rounded-lg p-1">
+            <button class="flex-1 py-1 text-sm font-medium rounded-md bg-white shadow"
+                    id="article">
+                Article
+            </button>
+            <button class="flex-1 py-1 text-sm text-gray-500 rounded-md"
+                    id="pages">
+                Pages
+            </button>
+        </div>  
+        </div>
+        
+
       {% include "/dashboard/createArticle.html" %}
-    {% endif %}
+        </div>
+      {% endif %}
     {% if pageType == 'manageArticle' %}
       {% include "/dashboard/article_manage.html" %}
     {% endif %}
