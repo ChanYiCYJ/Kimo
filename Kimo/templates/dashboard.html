@@ -4,15 +4,140 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {% block head %}
-        <title>{{ config.title }}</title>
-    {% endblock %}
-    <!-- Markdown 样式 -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/loading.css') }}">
-          <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Markdown -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css">
+    <title>管理后台</title>
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/static/css/loading.css">
+    <link rel="icon" href="{{ config.avatar }}" type="image/x-icon">
 </head>
-<body>
-{% include "post.html" %}
+
+<body class="bg-white text-gray-800">
+    
+    <div class="flex min-h-screen bg-gray-50">
+  <div class="flex h-screen w-16 flex-col justify-between border-e border-gray-100 bg-white">
+  <div>
+    <a href="/" class=" inline-flex size-16 items-center justify-center">
+      <span class="grid size-10 place-content-center rounded-xl bg-gray-100 text-xs text-gray-600">
+        <img class="rounded-xl" src="{{ config.avatar }}">
+      </span>
+    </a>
+
+    <div class="border-t border-gray-100">
+      <div class="px-2">
+        <div class="py-4">
+          <a href="/dashboard" class="t group relative flex justify-center rounded-sm {% if pageType == 'home' %}bg-blue-50 text-blue-700{% endif %}  px-2 py-1.5 ">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-door" viewBox="0 0 16 16">
+  <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146ZM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5Z"/>
+</svg>
+
+          </a>
+        </div>
+
+        <ul class="space-y-1 border-t border-gray-100 pt-4">
+          <li>
+            <a href="?type=createArticle" class="mb-4 {% if pageType =='createArticle' %}bg-blue-50 text-blue-700{% endif %} group relative flex justify-center rounded-sm px-2 py-1.5 text-gray-500 hover:bg-gray-50 hover:text-gray-700">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="{% if pageType == 'createArticle' %}text-blue-700{% endif %} bi bi-file-earmark-plus" viewBox="0 0 16 16">
+  <path d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
+  <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/>
+</svg>
+
+            </a>
+          </li>
+           <li>
+            <a href="?type=manageArticle" class=" mb-4 {% if pageType in ['manageArticle', 'editArticle'] %}bg-blue-50 text-blue-700{% endif %} group relative flex justify-center rounded-sm px-2 py-1.5 text-gray-500 hover:bg-gray-50 hover:text-gray-700">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="{% if pageType in ['manageArticle', 'editArticle'] %}
+text-blue-700{% endif %} bi bi-file-post-fill" viewBox="0 0 16 16">
+  <path d="M12 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM4.5 3h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1zm0 2h7a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-8a.5.5 0 0 1 .5-.5z"/>
+</svg>
+
+
+            </a>
+          </li>
+        <ul class="space-y-1 border-t border-gray-100  pt-4">
+         <li>
+            <a href="?type=pageManage" class=" mb-4 {% if pageType in ['pageManage'] %}bg-blue-50 text-blue-700{% endif %} group relative flex justify-center rounded-sm px-2 py-1.5 text-gray-500 hover:bg-gray-50 hover:text-gray-700">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="{% if pageType in ['pageManage'] %}
+text-blue-700{% endif %} bi bi-archive" viewBox="0 0 16 16">
+  <path d="M0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 12.5V5a1 1 0 0 1-1-1V2zm2 3v7.5A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5V5H2zm13-3H1v2h14V2zM5 7.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+</svg>
+
+
+            </a>
+          </li>
+          <ul class="space-y-1 border-t border-gray-100  pt-4">
+          <li>
+            <a href="?type=Setting" class="group relative  {% if pageType =='Setting' %}bg-blue-50{% endif %} flex justify-center rounded-sm px-2 py-1.5 text-gray-500 hover:bg-gray-50 hover:text-gray-700">
+             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="{% if pageType == 'Setting' %}text-blue-700{% endif %}bi bi-gear" viewBox="0 0 16 16">
+  <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
+  <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
+</svg>
+
+
+            </a>
+          </li>
+
+          </ul>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="sticky inset-x-0 bottom-0 border-t border-gray-100 bg-white p-2">
+    <a href="/logout" class="group relative flex w-full justify-center rounded-lg px-2 py-1.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700">
+      <svg xmlns="http://www.w3.org/2000/svg" class="size-5 opacity-75" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+      </svg>
+
+      <span class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded-sm bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible">
+        Logout
+      </span>
+    </a>
+  </div>
+</div>
+<!-- Content Area -->
+<main class="rounded-2xl flex-1 bg-white h-screen overflow-y-auto">
+  
+  <div class="mx-auto ">
+    {% if pageType == 'home' %}
+      <span>主页还没写</span>
+    {% endif %}
+    {% if pageType == 'createArticle' or pageType =='editArticle' %}
+
+        <div class="rounded-2xl bg-white space-y-1 p-1 ">
+    <!-- Tabs -->
+      <div class="w-full m-3 max-w-sm ">
+        <div class="flex bg-gray-100 rounded-lg p-1">
+            <a class="text-center flex-1 py-1 text-sm {% if not selectId %}font-medium rounded-md bg-white shadow{% endif %}"
+                    href="?type=createArticle">
+                Article
+            </a>
+            <a class="text-center flex-1 py-1 text-sm text-gray-500 {% if selectId %}font-medium rounded-md bg-white shadow{% endif %} rounded-md"
+                    href="?type=createArticle&id=2">
+                Pages
+            </a>
+        </div>
+        </div>{% if not selectId %}
+      {% include "/dashboard/createArticle.html" %}
+        {% else %}
+            {% include "/dashboard/createPage.html" %}
+            {% endif %}
+        </div>
+      {% endif %}
+    {% if pageType == 'manageArticle' %}
+      {% include "/dashboard/article_manage.html" %}
+    {% endif %}
+    {% if pageType == 'pageManage' %}
+      {% include "/dashboard/page.html" %}
+    {% endif %}
+    {% if pageType == 'Setting' %}
+      <span>还没思路</span>
+    {% endif %}
+  </div>
+</main>
+
+  
+</div>
 </body>

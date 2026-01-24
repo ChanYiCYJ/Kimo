@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class=" md:col-span-2 bg-white rounded-3xl shadow-sm p-4 sm:p-6">
+{% if pageType == "list" %}
+{% for list in page %}
+{% include "components/list.html" %}
+{% endfor %}
+{% endif %}
+{% if pageType == "markdown" %}
+{{ page | safe }}
+{% endif %}
+{% if pageType == "html" %}
+{{ page | safe }}
+{% endif %}
+        </div>
+{% endblock %}

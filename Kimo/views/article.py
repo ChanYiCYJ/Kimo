@@ -2,22 +2,23 @@ from flask import Blueprint, render_template, request, session, jsonify,redirect
 
 from Kimo.config import load_config
 from Kimo.services import ArticlesService as Article
+from Kimo.services import PageService as Page
 bg=Blueprint('article',__name__)
 
 @bg.route('/',methods=['GET','POST'])
 def index():
     page= request.args.get("page", 1, type=int)
+    page_list =Page.get_all_page()
     category_all = Article.get_all_categories()
     result =Article.get_articles_lists(page)
     page_id=result['page_id']+1
-    print(page_id)
     articles =result['articles']
     tag_all = Article.get_all_tags()
     total_articles =result['total_page']
     config =load_config('app','config')
     if request.method=='GET':
         return render_template('index.html', page_title=config["title"],
-                               page_subtitle=config["ltitle"],total_pages=total_articles,pageId=page_id,config=config, posts=articles,categorys=category_all,tags=tag_all)
+                               pageList=page_list,page_subtitle=config["ltitle"],total_pages=total_articles,pageId=page_id,config=config, posts=articles,categorys=category_all,tags=tag_all)
 
     return articles
 
@@ -96,7 +97,7 @@ def editor():
         if request.method == 'GET':
             categories = Article.get_all_categories()
             tag = Article.get_all_tags()
-            return render_template('createArticle.html', categories=categories, tags=tag)
+            return render_template('createArticle.html',article='1',editor='1', categories=categories, tags=tag)
         return render_template('post.html')
 
     return redirect(url_for('account.login'))
@@ -121,7 +122,7 @@ def edit_article(post_id):
     }
         print(post)
         print(post)
-        return render_template('createArticle.html', post=post,categories=categories, tags=tag)
+        return render_template('createArticle.html',article='1',editor='1', post=post,categories=categories, tags=tag)
     return redirect(url_for('account.login'))
 
 
@@ -155,13 +156,9 @@ def upload_image_by_vditor():
             result=Article.upload_image_by_vditor(file)
             return result 
     return jsonify({'message': '无权'}),500 
-        
-@bg.route('/dashboard/article/manage',methods=['GET'])
-def manage():
-    config = load_config('app', 'config')
-    check_user = session.get('user_role')
-    if check_user == 2:
-        if request.method =='GET':
-            article_all = Article.get_all_articles()
-            return render_template("article_manage.html",config=config ,post=article_all)
-    return redirect(url_for('account.login'))
+
+@bg.route('/article/search',methods=['POST'])
+def search():
+    if request.method == 'POST':
+        text =request.json.get('text')
+        return Article.search(text)

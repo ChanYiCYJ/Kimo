@@ -28,18 +28,7 @@ def get_article_page(article_id):
             "msg" : '文章不存在'
         }
     category_name=get_category_name_by_id(result['category_id'])
-    content = markdown.markdown(
-            result['content'],
-            extensions=[
-                "tables",
-                "toc",
-                "fenced_code",
-                "pymdownx.superfences",
-                "pymdownx.tasklist",
-                "pymdownx.details",
-                "pymdownx.inlinehilite",
-            ]
-)
+    content = switch_markdown_to_html(result['content'])
     return{
         "status":True,
         "title" :result['title'],
@@ -48,18 +37,38 @@ def get_article_page(article_id):
         "category_name":category_name,
     }
 
+def switch_markdown_to_html(content):
+    return markdown.markdown(
+        content,
+        extensions=[
+            "tables",
+            "toc",
+            "fenced_code",
+            "pymdownx.superfences",
+            "pymdownx.tasklist",
+            "pymdownx.details",
+            "pymdownx.inlinehilite",
+        ]
+    )or[]
+
 def get_articles_lists(page):
     perpage = 5
     page_id=page-1
     offset = page_id * perpage
     result = articles.get_articles_lists(limit=perpage, offset=offset)
-    all_articles_length = articles.get_all_articles_count()['COUNT(*)']
-    total_page = math.ceil(all_articles_length / perpage)
+    
+    all_articles_length = articles.get_all_articles_count()
+    if all_articles_length:
+        total_page = math.ceil(all_articles_length['COUNT(*)'] / perpage)
+    else:
+        total_page =1
     return {
-        "articles": result,
-        "total_page": total_page,
-        "page_id" : page_id
-    }
+            "status": True,
+            "articles": result,
+            "total_page": total_page,
+            "page_id" : page_id
+        }
+    
 
 def send_article(title, content, category_name, description, cover_image,id):
     # 1. 基础校验
@@ -122,7 +131,7 @@ def send_article(title, content, category_name, description, cover_image,id):
 
 def edit_article(id):
     return articles.get_article_by_id(id)
-
+    
 def delete_article(id):
     check = articles.get_article_by_id(id)
     if not check:
@@ -157,3 +166,12 @@ def upload_image_by_vditor(file):
                 }
             }
         }
+    
+def search(text):
+   result=articles.get_article_by_title(text)
+   if not result:
+       return {
+           "status":0,
+           "msg":"查询不到数据"
+       }
+   return result 

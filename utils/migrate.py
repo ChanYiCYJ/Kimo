@@ -30,8 +30,15 @@ CREATE TABLE IF NOT EXISTS userInfo (
   UNIQUE KEY uk_email (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 """,
-
-# 3️⃣ 标签表
+"""
+CREATE TABLE IF NOT EXISTS page (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  UNIQUE KEY `page_unique` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+""",
 """
 CREATE TABLE IF NOT EXISTS tags (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -109,7 +116,7 @@ def create_admin():
 
         # 2️⃣ 检查 admin 是否存在
         check = fetch_one(
-            "SELECT id FROM userinfo WHERE user_name=%s LIMIT 1",
+            "SELECT id FROM userInfo WHERE user_name=%s LIMIT 1",
             ["admin"]
         )
         if check:
@@ -130,7 +137,7 @@ def create_admin():
         # 5️⃣ 创建管理员（role=0 表示管理员）
         ok = implement(
             """
-            INSERT INTO userinfo (email, password, user_name, role)
+            INSERT INTO userInfo (email, password, user_name, role)
             VALUES (%s, %s, %s, %s)
             """,
             [email, hash_pwd, "admin", 0]

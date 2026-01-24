@@ -1,26 +1,8 @@
-{% extends "layout.html" %}
 
-{% block header %}
-<header class="sticky top-0 z-30 bg-white/80 backdrop-blur
-               border-b border-gray-100">
-  <div class="mx-auto max-w-6xl px-4 sm:px-6 h-14
-              flex items-center justify-between">
+<div class="bg-white col-span-1 md:col-span-2 space-y-6">
+<div class="min-h-screen rounded-3xl ">
 
-    <!-- 左 -->
-    <div class="flex items-center gap-2 text-sm text-gray-700">
-      <span class="opacity-70">📄</span>
-      <span class="font-medium">文章</span>
-    </div>
-
-  </div>
-</header>
-{% endblock %}
-
-{% block content %}
-<div class="col-span-1 md:col-span-2 space-y-6">
-<div class="min-h-screen rounded-3xl  bg-white/80 backdrop-blur">
-
-  <main class="mx-auto max-w-6xl px-4 sm:px-6 py-6">
+  <main class=" mx-auto max-w-5xl px-4 sm:px-6 py-6">
 
     <!-- 筛选 -->
     <div class="flex items-center gap-3 text-sm mb-5">
@@ -114,7 +96,7 @@
                  transition-all duration-150"
         >
           <a
-            href="/editor/{{ article.id }}"
+            href="?type=editArticle&id={{ article.id }}"
             class="px-3 py-1.5 rounded-full
                    text-gray-600
                    hover:bg-gray-200/60"
@@ -141,7 +123,7 @@
 
       {% else %}
         <div class="py-24 text-center text-sm text-gray-400">
-          还没有文章，点击右上角「新建」开始写作 ✍️
+          还没有文章，点击左边菜单「Post」开始写作 ✍️
         </div>
       {% endif %}
 
@@ -150,24 +132,6 @@
   </main>
 </div>
 </div>
-{% endblock %}
-
-{% block footer %}
-<div class="bg-white/80 backdrop-blur rounded-3xl shadow-sm p-6">
-       <a
-          href="/editor"
-          class="px-6 py-2 rounded-2xl
-                 text-sm 
-                 bg-white border text-black
-                 active:scale-[0.98]
-                 transition"
-        >
-          新建文章
-</a>
-</div>
-{% endblock %}
-
-{% block script %}
 <script>
 document.addEventListener('click', function (e) {
   const btn = e.target.closest('.delete-btn');
@@ -199,4 +163,4 @@ document.addEventListener('click', function (e) {
   });
 });
 </script>
-{% endblock %}
+

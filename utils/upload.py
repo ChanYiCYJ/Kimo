@@ -2,7 +2,7 @@ import os
 from werkzeug.utils import secure_filename
 from uuid import uuid4
 UPLOAD_FOLDER ='Kimo/static/uploads'
-ALLOWED_EXTENSIONS = {'jpg','jpeg','png','gif'}
+ALLOWED_EXTENSIONS = {'jpg','jpeg','png','gif','md','webp'}
 
 def upload_file(file):
     if not file:
