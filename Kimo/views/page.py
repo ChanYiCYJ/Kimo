@@ -19,9 +19,10 @@ def create_page():
     check_user = session.get('user_role')
     if check_user == 2:
         if request.method == 'POST':
-            page_title = request.form['page_title']
-            page_content = request.form['content']
-            page_type = request.form['type']
+            page_title = request.json.get('title')
+            page_content = request.json.get('content')
+            page_type = request.json.get('type')
+            print(page_title,page_content,page_type)
             result= PageService.create(page_title, page_content, page_type)
             return {
                 'status':result['status'],

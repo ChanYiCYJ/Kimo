@@ -36,8 +36,9 @@ def index():
                 }
                     return render_template("dashboard.html",config=config,pageType=page_type,post=post)
                 case 'createArticle':
+                    select_id=request.args.get("id", type=int)
                     categories = Article.get_all_categories()
-                    return render_template("dashboard.html",editor='1',categories=categories,id=id,config=config,pageType=page_type)
+                    return render_template("dashboard.html",selectId=select_id,editor='1',categories=categories,id=id,config=config,pageType=page_type)
                 case 'pageManage':
                     categories = Article.get_all_categories()
                     page_list=Page.get_all_page()
