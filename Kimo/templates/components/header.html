@@ -5,20 +5,20 @@
 >
   <div
     class="max-w-6xl mx-auto px-4
-           h-14
+           h-16
            flex items-center justify-between"
   >
     <!-- Left: Page Info -->
     <div class="flex items-center gap-3 min-w-0">
-        {% if article %} <a class="text-gray-500 text-sm hover:text-blue-500" href="/"> ← 返回首页 </a> {% endif %}
+        {% if article %} <a class="text-gray-500 text-xl hover:text-blue-500" href="/"> ← 返回首页 </a> {% endif %}
       <h1
-        class="text-base font-medium text-gray-900 truncate"
+        class="text-xl font-medium text-gray-900 truncate"
       >
         {{ page_title }}
       </h1>
 
       {% if page_subtitle %}
-      <span class="hidden sm:inline text-sm text-gray-400 truncate">
+      <span class="hidden sm:inline text-base text-gray-400 truncate">
         {{ page_subtitle }}
       </span>
       {% endif %}
