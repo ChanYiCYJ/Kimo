@@ -34,6 +34,7 @@ def get_article_page(article_id):
         "title" :result['title'],
         "content" :content,
         "created" : result['created'],
+        "cover_image" :result['cover_image'],
         "category_name":category_name,
     }
 

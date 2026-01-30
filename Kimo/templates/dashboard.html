@@ -102,7 +102,7 @@ text-blue-700{% endif %} bi bi-archive" viewBox="0 0 16 16">
   
   <div class="mx-auto ">
     {% if pageType == 'home' %}
-      <span>主页还没写</span>
+       {% include "/dashboard/home.html" %}
     {% endif %}
     {% if pageType == 'createArticle' or pageType =='editArticle' %}
 

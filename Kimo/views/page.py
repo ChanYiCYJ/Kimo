@@ -38,6 +38,16 @@ def update_page():
     check_user = session.get('user_role')
     if check_user == 2:
         if request.method == 'POST':
+            page_id = request.form['page_id']
             page_title = request.form['page_title']
             page_content = request.form['content']
             page_type = request.form['type']
+            result= PageService.edit(page_id,page_title, page_content, page_type)
+            return {
+                'status':result['status'],
+                'msg':result['msg']
+            }
+    return {
+        'status':False,
+        'msg':'No'
+    }
