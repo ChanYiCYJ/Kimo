@@ -17,7 +17,7 @@
 <body class="bg-white text-gray-800">
     
     <div class="flex min-h-screen bg-gray-50">
-  <div class="flex h-screen w-16 flex-col justify-between border-e border-gray-100 bg-white">
+  <div class="flex h-screen w-20 flex-col justify-between border-e border-gray-100 bg-white">
   <div>
     <a href="/" class=" inline-flex size-16 items-center justify-center">
       <span class="grid size-10 place-content-center rounded-xl bg-gray-100 text-xs text-gray-600">
@@ -140,4 +140,36 @@ text-blue-700{% endif %} bi bi-archive" viewBox="0 0 16 16">
 
   
 </div>
+<script>
+document.addEventListener('click', function (e) {
+  const btn = e.target.closest('.delete-btn');
+  if (!btn) return;
+
+  const post_id = btn.dataset.id;
+  if (!post_id) return;
+
+  if (!confirm('确定要删除这篇文章吗？')) return;
+
+  fetch('/article/delete', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ post_id })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status) {
+      window.location.href = window.location.href;
+    } else {
+      window.location.href = window.location.href;
+      alert(data.message || '删除失败');
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    alert('请求失败');
+  });
+});
+</script>
 </body>

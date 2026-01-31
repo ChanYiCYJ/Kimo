@@ -24,6 +24,8 @@ def create(name,content,page_type):
             'status': False,
             'msg':'Page不支持该格式'
         }
+    if page_type == 'list':
+        content = '['+content+']'
     result =page.create_page(name,content,page_type)
     if result:
         return {

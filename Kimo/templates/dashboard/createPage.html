@@ -30,71 +30,21 @@
   >
     <div class="mx-auto max-w-8xl px-6">
       <div class="flex h-16 items-center justify-between">
+     <!-- 左侧：标题 -->
+        <div class="flex-1 flex items-center gap-4">
 
+
+          {% if post %}
+          <a
+            href="/dashboard?type=manageArticle"
+            class="mr-4 px-3 py-2 rounded-xl text-sm bg-white border border-gray-200 hover:bg-gray-100 transition"
+          >
+            返回
+          </a>
+          {% endif %}
         <!-- 左侧：标题 -->
         <div class="flex-1 flex items-center">
-        <!-- Tab-style Mode Switcher -->
-<div class="relative hidden mr-3 inline-block">
-  <details class="group">
-    <!-- Active Tab -->
-    <summary
-      class="
-        list-none cursor-pointer
-        rounded-t-lg border border-gray-200 bg-white
-        px-4 py-2 text-sm font-medium text-gray-900
-        flex items-center gap-2
-      "
-    >
-      {% if selectId %}
-        HTML
-      {% else %}
-        Markdown
-      {% endif %}
 
-      <!-- caret -->
-      <svg
-        class="h-3 w-3 text-gray-400 transition group-open:rotate-180"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 20 20" fill="currentColor">
-        <path fill-rule="evenodd"
-          d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.7a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
-          clip-rule="evenodd" />
-      </svg>
-    </summary>
-
-    <!-- Tab Panel -->
-    <div
-      class="
-        absolute left-0 z-10
-        w-full rounded-b-lg
-        border border-t-0 border-gray-200
-        bg-white shadow-md
-      "
-    >
-      {% if not selectId %}
-        <a
-          href="?type=createArticle&id=2"
-          class="
-            block px-4 py-2 text-sm text-gray-600
-            hover:bg-gray-50
-          "
-        >
-          Markdown
-        </a>
-      {% else %}
-        <a
-          href="?type=createArticle"
-          class="
-            block px-4 py-2 text-sm text-gray-600
-            hover:bg-gray-50
-          "
-        >
-          Markdown
-        </a>
-      {% endif %}
-    </div>
-  </details>
-</div>
 
 
           {% if post %}
@@ -109,7 +59,7 @@
           <input
             id="titleInput"
             placeholder="Page Title"
-            class="w-full max-w-3xl
+            class="ml-4 w-full max-w-3xl
                    bg-transparent
                    text-2xl tracking-tight
                    text-gray-900 placeholder-gray-400
@@ -120,6 +70,20 @@
 
         <!-- 右侧：按钮 -->
         <div class="flex items-center gap-3">
+              <!-- ===== 新：纯 HTML/CSS 分段开关（Markdown / List） ===== -->
+          <nav aria-label="编辑模式" class="inline-flex rounded-xl bg-white border border-gray-200 shadow-sm p-1">
+            <button
+               class="px-3 py-2 text-sm rounded-lg transition
+                      {% if not is_list %}bg-white text-gray-900 font-medium shadow{% else %}text-gray-500 hover:bg-gray-50{% endif %}">
+              Markdown
+            </button>
+            <button
+               class="px-3 py-2 text-sm rounded-lg transition
+                      {% if is_list %}bg-white text-gray-900 font-medium shadow{% else %}text-gray-500 hover:bg-gray-50{% endif %}">
+              List
+            </button>
+          </nav>
+          <!-- ===== 分段开关结束 ===== -->
           {% if post %}
             <button
               id="editBtn"
@@ -248,6 +212,24 @@
       }
     })
   </script>
+  <script>
+const buttons = document.querySelectorAll(".mode-btn");
+
+buttons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    buttons.forEach(b => b.classList.remove("bg-white","shadow","text-gray-900","font-medium"));
+    btn.classList.add("bg-white","shadow","text-gray-900","font-medium");
+
+    const view = btn.dataset.view;
+    console.log("当前模式：", view);
+
+    // 你可以在这里控制显示区域
+    document.getElementById("markdownBox").style.display = view === "markdown" ? "block" : "none";
+    document.getElementById("listBox").style.display = view === "list" ? "block" : "none";
+  });
+});
+</script>
+
   <!-- 发布 / 编辑逻辑 -->
   <script src="/static/js/createPage.js"></script>
 

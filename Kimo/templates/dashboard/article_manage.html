@@ -132,35 +132,5 @@
   </main>
 </div>
 </div>
-<script>
-document.addEventListener('click', function (e) {
-  const btn = e.target.closest('.delete-btn');
-  if (!btn) return;
 
-  const post_id = btn.dataset.id;
-  if (!post_id) return;
-
-  if (!confirm('确定要删除这篇文章吗？')) return;
-
-  fetch('/article/delete', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ post_id })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.status) {
-      location.reload();
-    } else {
-      alert(data.message || '删除失败');
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    alert('请求失败');
-  });
-});
-</script>
 

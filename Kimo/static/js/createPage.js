@@ -1,7 +1,7 @@
 document.getElementById('sendBtn').addEventListener('click', async () => {
       const title = document.getElementById('titleInput').value.trim();
       const content = vditor.getValue().trim();
-      const type= "markdown";
+      const type= "list";
       if (!title) {
         showModal('标题不能为空');
         return;
