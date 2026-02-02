@@ -8,7 +8,24 @@
 {% endfor %}
 {% endif %}
 {% if pageType == "markdown" %}
-{{ page | safe }}
+  <!-- 正文 -->
+  <div class="flex justify-center">
+    <div class="w-full max-w-3xl">
+      <div
+        class="article-body markdown-body prose prose-2xl prose-slate
+               prose-headings:font-semibold
+               prose-p:leading-9
+               prose-p:text-lg
+               prose-a:text-blue-600
+               prose-code:bg-gray-100 prose-code:px-1 prose-code:rounded
+               prose-pre:bg-gray-900 prose-pre:text-gray-100
+               prose-img:shadow
+               max-w-none mt-6"
+      >
+        {{ page | safe }}
+      </div>
+    </div>
+  </div>
 {% endif %}
 {% if pageType == "html" %}
 {{ page | safe }}
