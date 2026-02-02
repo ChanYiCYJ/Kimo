@@ -12,7 +12,7 @@ def get_page_by_id(page_id):
     return result
 
 def get_page_by_name(name):
-    result =db.fetch_one('select * from page where name=%s',[name]) or[]
+    result =db.fetch_one('select * from page where name=%s',[name]) or None
     return result
 
 def delete_page(page_id):
