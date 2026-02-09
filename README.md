@@ -7,8 +7,7 @@
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
 **A Lightweight Flask-Based Backend Blog System**
-
-English | [简体中文](./README.zh.md)
+**Not prefect**
 
 </div>
 
@@ -26,24 +25,6 @@ Kimo is a lightweight blog backend system built with the Flask framework. It pro
 - ✅ **Modular Architecture**: Code organized using Flask Blueprints
 - ✅ **Database Connection Pool**: Efficient database connection management via DBUtils
 
-## 🛠️ Tech Stack
-
-| Technology          | Description       |
-|---------------------|-------------------|
-| **Backend**         | Flask 2.x         |
-| **Database**        | MySQL 5.7+        |
-| **ORM / Query**     | Raw SQL + PyMySQL |
-| **Connection Pool** | DBUtils           |
-| **Python Version**  | 3.7+              |
-
-## 📦 Open Source Dependencies
-
-- **Flask** – A lightweight Python web framework for backend APIs
-- **PyMySQL** – A pure-Python MySQL client library
-- **DBUtils** – Database connection pooling for improved performance
-- **Vditor** – Easy-to-use Markdown editor, born to adapt to different application scenarios
-- **Markdown** – A Python library for converting Markdown text into HTML
-- **pymdown-extensions** – A collection of powerful extensions that enhance Python Markdown features
 ## 🚀 Quick Start
 
 ### Requirements
@@ -112,9 +93,6 @@ Application will start at: `http://localhost:80`
 
 This project is licensed under the **MIT License**.
 
-## 👤 Author
-
-**ChanYiCYJ**
 
 ---
 

@@ -15,6 +15,10 @@ def get_page_by_name(name):
     result =db.fetch_one('select * from page where name=%s',[name]) or None
     return result
 
+def get_like_name(name):
+    result = db.fetch_one('select * from page where like name=%s', [name]) or None
+    return result
+
 def delete_page(page_id):
     result =db.implement(
         'delete from page where id=%s',[page_id])

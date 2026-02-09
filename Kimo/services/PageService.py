@@ -1,9 +1,9 @@
-from Kimo.models import page
+from Kimo.models import pages
 import json
 from Kimo.services import ArticlesService
 support_type={'markdown','html','list','link'}
 def create(name,content,page_type):
-    check =page.get_page_by_name(name)
+    check =pages.get_page_by_name(name)
     if check:
         return {
             'status': False,
@@ -26,7 +26,7 @@ def create(name,content,page_type):
         }
     if page_type == 'list':
         content = '['+content+']'
-    result =page.create_page(name,content,page_type)
+    result =pages.create_page(name,content,page_type)
     if result:
         return {
             'status': True,
@@ -38,7 +38,7 @@ def create(name,content,page_type):
     }
 
 def edit(page_id,name,content,page_type):
-    check =page.get_page_by_id(page_id)
+    check =pages.get_page_by_id(page_id)
     if not check:
         return {
             'status': False,
@@ -72,14 +72,14 @@ def edit(page_id,name,content,page_type):
     }
 
 def get_all_page():
-    result =page.get_all_page()
+    result =pages.get_all_page()
     return result
 
 def get_by_id(page_id):
-    return page.get_page_by_id(page_id)
+    return pages.get_page_by_id(page_id)
 
 def get_by_name(page_name):
-    page_result = page.get_page_by_name(page_name)
+    page_result = pages.get_page_by_name(page_name)
     if page_result:
         match page_result['type']:
             case 'list':
@@ -112,7 +112,7 @@ def get_page_list(content):
     return lists
 
 def delete(page_id):
-    result=page.delete_page(page_id)
+    result=pages.delete_page(page_id)
     if not result:
         return {
             'status': False,

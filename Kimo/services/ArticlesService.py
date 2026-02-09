@@ -169,7 +169,7 @@ def upload_image_by_vditor(file):
         }
     
 def search(text):
-   result=articles.get_article_by_title(text)
+   result=articles.get_all_like_title(text)
    if not result:
        return {
            "status":0,

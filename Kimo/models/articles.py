@@ -9,8 +9,11 @@ def get_articles_lists(limit, offset):
 def get_all_articles_count():
     return db.fetch_one('SELECT COUNT(*) FROM articles;')or []
 
-def get_article_by_title(titile):
-    return db.fetch_one('SELECT * FROM articles WHERE title LIKE %s',[titile])or []
+def get_article_by_title(title):
+    return db.fetch_one('SELECT * FROM articles WHERE title LIKE %s',[title])or []
+
+def get_all_like_title(title):
+    return db.fetchall('SELECT * FROM articles WHERE title LIKE %s', [title]) or []
 
 def get_article_by_id(id):
     return db.fetch_one('SELECT * FROM articles WHERE id=%s',[id])or []
