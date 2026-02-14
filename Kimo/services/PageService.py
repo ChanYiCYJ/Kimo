@@ -59,7 +59,7 @@ def edit(page_id,name,content,page_type):
             'status': False,
             'msg':'You need to enter page type'
         }
-    result =page.edit_page(page_id,name,content,page_type)
+    result =pages.edit_page(page_id,name,content,page_type)
     if result:
         return {
 
