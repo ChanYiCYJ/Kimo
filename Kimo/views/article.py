@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, request, session, jsonify,redirect
 from Kimo.config import load_config
 from Kimo.services import ArticlesService as Article
 from Kimo.services import PageService as Page
+from Kimo.services.searcher import Service
 bg=Blueprint('article',__name__)
 
 @bg.route('/',methods=['GET','POST'])
@@ -29,8 +30,7 @@ def article(article_id):
     article_page = Article.get_article_page(article_id)
     print(article_page)
     if request.method=='GET':
-        return render_template('article.html',config=config , page_title=article_page['title'],
-                               page_subtitle=f"Created: {article_page['created']}", article=article_page,content=article_page['content']
+        return render_template('article.html',config=config , page_title=config['title'], article=article_page,content=article_page['content']
                                )
 
     return article_page
@@ -40,7 +40,6 @@ def article_post():
     check_user = session.get('user_role')
     if check_user == 2:
         if request.method == 'POST':
-            print('执行post')
             title = request.json.get('title')
             content = request.json.get('content')
             category_name = request.json.get('category_name')
@@ -157,8 +156,27 @@ def upload_image_by_vditor():
             return result 
     return jsonify({'message': '无权'}),500 
 
-@bg.route('/article/search',methods=['POST'])
+@bg.route('/search',methods=['POST','GET'])
 def search():
     if request.method == 'POST':
         text =request.json.get('text')
-        return Article.search(text)
+        search_type = request.json.get('search_type')
+        service = Service()
+        result = service.search(
+            text,
+            search_type,
+            page=1
+        )
+    if request.method == 'GET':
+            config =load_config('app','config')
+            text =request.args.get('keyword', type=str)
+            search_type = 'articles'  # 搜索类型为文章，如后期定义
+            page = request.args.get('page', 1, type=int)
+            service = Service()
+            result = service.search(
+                text,
+                search_type,
+                page
+            )
+            return render_template('search.html',config=config,page_title=config["title"], results=result['data'])
+    return 'Not supported'

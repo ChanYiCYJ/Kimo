@@ -15,12 +15,17 @@ def get_page_by_name(name):
     result =db.fetch_one('select * from page where name=%s',[name]) or None
     return result
 
+def get_like_name(name):
+    result = db.fetch_one('select * from page where name like %s', [name]) or None
+    return result
+
 def delete_page(page_id):
     result =db.implement(
         'delete from page where id=%s',[page_id])
     return result
 
-def get_all_page():
-    return db.fetchall(
-        'select * from page',
-    )
+def get_all_page(limit=5, offset=0):
+    return db.fetchall('select * from page LIMIT %s OFFSET %s;', (limit, offset))
+
+def get_all_page_count():
+    return db.fetch_one('select count(*) from page;')
