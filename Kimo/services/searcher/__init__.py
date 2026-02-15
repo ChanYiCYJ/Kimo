@@ -35,7 +35,6 @@ class Service:
 
         if search_type not in self.map:
             return {"status": False, "msg": "不支持的类型,所支持搜索的类型有all,articles,pages"},400
-
         searcher = self.map[search_type]
         data = searcher.search(keyword)   
         return {
