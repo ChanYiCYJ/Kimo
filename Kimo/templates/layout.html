@@ -96,104 +96,123 @@
       ></div>
     </div>
 
-    <!-- ===== 背景图 ===== -->
-    <div
-      id="bg-image"
-      class="fixed inset-0 -z-20 bg-[url('https://api.1314.cool/bingimg')] bg-cover bg-center blur-up"
-    ></div>
-
-    <!-- ===== 背景遮罩（桌面模糊 / 移动纯色） ===== -->
-    <div
-      class="fixed inset-0 -z-10 bg-white/70 backdrop-blur no-mobile-blur"
-    ></div>
-
+    
     {% block header %} {% include "components/header.html" %} {% endblock %}
 
     <main
-      class="{% if not article %}max-w-6xl{% else %}max-w-7xl{% endif %} mx-auto px-4 my-10"
+      class="max-w-6xl mx-auto px-4 my-10"
     >
-      <!-- List Header -->
-      {% if pageId == 1 %}
-      <div class="mb-6">
-        <div class="ml-1 flex items-center justify-between">
-          <h2 class="text-xl font-medium text-gray-800">最近文章</h2>
-          {% if total_pages >= 2 %}
-          <a href="?page=2" class="text-xl font-medium text-gray-800 ..."
-            >更多文章 →</a
-          >
-          {% endif %}
-        </div>
-      </div>
-      {% endif %}
+    
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         {% block content %}{% endblock %}
 
-        <div class="col-span-1 space-y-6">
-          <!-- 侧栏内容保持不变 -->
-           
-          <div
-            class="bg-white/80 backdrop-blur {% if editor %}hidden{% endif %} rounded-3xl shadow-sm p-6"
-          >
-            <!-- Avatar / Info -->
-            <div class="flex flex-col items-center text-center space-y-4">
-              <div
-                class="relative w-24 h-24 rounded-full overflow-hidden ring-2 ring-gray-200 hover:ring-black transition"
-              >
-                <img
-                  src="{{ config.avatar }}"
-                  alt="Avatar"
-                  class="w-full h-full object-cover"
-                />
-              </div>
-              <div>
-                <h2 class="text-lg font-semibold text-gray-900">
-                  {{ config.personName }}
-                </h2>
-                <p class="text-sm text-gray-500 mt-1">
-                  {{ config.introduction }}
-                </p>
-              </div>
-              <p class="text-sm text-gray-600 leading-relaxed">
-                {{ config.bio }}
-              </p>
-              <div class="flex items-center gap-4 pt-2">
-                <a
-                  href="{{ config.github }}"
-                  target="_blank"
-                  class="text-gray-500 hover:text-black transition"
-                  aria-label="GitHub"
-                >
-                  <!-- SVG... -->
-                </a>
-              </div>
-            </div>
-          </div>
+       <div class="col-span-1">
+  <div class="bg-white/80 backdrop-blur border border-gray-200 shadow-sm rounded-3xl overflow-hidden">
 
-          {% block footer %}
-          <!-- 页脚侧栏项保持 -->
-          <div class="bg-white/80 backdrop-blur rounded-3xl shadow-sm p-4">
-            <h3 class="font-semibold ml-2 mt-2 mb-3">Pages</h3>
-            {% if pageList %} {% for page in pageList %}
-            <a
-              {% if not page.type=="link" %}href="/{{ page.name }}"
-              {% else %}href="{{ page.content }}"
-              {% endif %}
-              class="group mt-4 flex items-center rounded-2xl border border-gray-200 bg-white p-4 transition hover:-translate-y-1 hover:shadow-sm hover:border-gray-300 active:scale-[0.98]"
-            >
-             
-              <div class="flex-1 min-w-0">
-                <h3 class="ml-2 text-base font-medium text-gray-800 truncate">
-                  {{ page.name }}
-                </h3>
-              </div>
-            </a>
-            {% endfor %} {% else %}
-            <span class="ml-2 text-gray-400 text-sm">暂无Page</span>
-            {% endif %}
-          </div>
-          {% endblock %}
+    <!-- Header / Profile -->
+    <div class="bg-white/80 backdrop-blur {% if editor %}hidden{% endif %} p-6">
+      <div class="grid grid-cols-1 ">
+
+        <!-- Avatar -->
+        <div class="relative w-24 h-24 rounded-full overflow-hidden ring-1 ring-gray-200 hover:ring-gray-300 transition">
+          <img src="{{ config.avatar }}" alt="Avatar" class="w-full h-full object-cover" />
         </div>
+        <div>
+        <!-- Info -->
+        <h2 class="text-xl ml-2 mt-2 font-semibold text-gray-900">
+          {{ config.personName }}
+        </h2>
+
+        <p class="text-base text-gray-500 ml-2 mt-1">
+          {{ config.introduction }}
+        </p>
+
+        <p class="text-sm text-gray-600 leading-relaxed mt-2">
+          {{ config.bio }}
+        </p>
+
+        <!-- Social -->
+        <div class="flex items-center gap-4 pt-2 mb-4">
+          <a href="{{ config.github }}" target="_blank"
+             class="text-gray-500 hover:text-black transition"
+             aria-label="GitHub">
+            <!-- SVG -->
+          </a>
+        </div>
+</div>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="border-t border-gray-200">
+      <nav class="text-sm text-gray-500">
+        <form action="/search" method="get" class="w-full px-4 py-3">
+          <div class="flex items-center overflow-hidden bg-white border border-gray-200 rounded-2xl">
+            
+            <input
+              type="text"
+              name="keyword"
+              placeholder="搜索文章..."
+              class="flex-1 px-4 py-2 text-sm outline-none text-gray-700"
+            />
+
+            <button
+              type="submit"
+              class="bg-gray-500 hover:bg-black text-white px-3 py-2 m-1 rounded-xl transition"
+            >
+              搜索
+            </button>
+
+          </div>
+        </form>
+      </nav>
+    </div>
+
+    {% block footer %}
+    <!-- Pages -->
+    <div class="bg-white/80 backdrop-blur border-t border-gray-200 p-4">
+      <p class="ml-2 text-lg mb-3">Pages</p>
+
+      {% if pageList %}
+        {% for page in pageList %}
+          <a
+            {% if not page.type == "link" %}
+              href="/{{ page.name }}"
+            {% else %}
+              href="{{ page.content }}"
+            {% endif %}
+            class="group flex items-center py-2 border-b border-gray-200 bg-white transition hover:-translate-y-0.5 hover:border-gray-300"
+          >
+            <h3 class="ml-2 text-base font-medium text-gray-800 truncate">
+              {{ page.name }}
+            </h3>
+          </a>
+        {% endfor %}
+      {% else %}
+        <span class="ml-2 text-gray-400 text-sm">暂无Page</span>
+      {% endif %}
+    </div>
+    {% endblock %}
+
+    <!-- Footer -->
+    <div class="bg-white/80 backdrop-blur p-4 text-sm text-gray-400 space-y-1">
+      <p class="ml-2">
+        Powered by
+        <a href="https://github.com/ChanYiCYJ/Kimo"
+           target="_blank"
+           class="text-gray-500 hover:text-gray-700">
+          Kimo
+        </a>
+      </p>
+
+      <p class="ml-2">
+        © {{ config.personName }} All rights reserved.
+      </p>
+    </div>
+
+  </div>
+</div>
       </div>
     </main>
 

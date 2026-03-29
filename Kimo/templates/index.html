@@ -2,11 +2,30 @@
 
 {% block content %}
 
-<div class="col-span-1 md:col-span-2 space-y-6">
-
+<div class="col-span-1 bg-white/80 backdrop-blur border border-gray-200 shadow-sm rounded-3xl md:col-span-2 ">
+    <!-- List Header -->
+      {% if pageId == 1 %}
+      <div class=" pt-5  pb-5 px-4">
+         
+        <div class="ml-1 flex items-center justify-between">
+          <h2 class="text-2xl font-medium pl-2 text-gray-800">最近文章</h2>
+          {% if total_pages >= 2 %}
+          <a href="?page=2" class="text-xl font-medium  text-gray-500 hover:text-gray-900"
+            >更多文章 →</a
+          >
+          {% endif %}
+        </div>
+      </div>
+      {% else %}
+      <div class=" pt-5  pb-5 px-4">
+      <div class="ml-1 flex items-center justify-between">
+        <h2 class="text-2xl font-medium pl-2 text-gray-800">页{{ pageId }} </h2>
+        </div>
+      </div>
+      {% endif %} 
   <!-- Posts -->
   {% if posts %}
-    <div class="space-y-5">
+    <div class="">
       {% for post in posts %}
         {% include "components/postCard.html" %}
       {% endfor %}
@@ -17,7 +36,7 @@
     </div>
   {% endif %}
 {% if pageId != 1 %}
-<nav class="bg-white/80 backdrop-blur rounded-3xl shadow-sm p-6 flex justify-center mt-12">
+<nav class="bg-white/80 backdrop-blur rounded-3xl shadow-sm p-6 flex justify-center mt-2">
   <ul class="flex items-center gap-2 text-sm select-none">
 
     <!-- 上一页 -->

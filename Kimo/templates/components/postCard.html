@@ -1,14 +1,15 @@
 <article
-  class="flex flex-col md:flex-row gap-4 md:gap-6 p-4 sm:p-4 bg-white/80 backdrop-blur
-         rounded-3xl overflow-hidden
-         border border-gray-100
+  class="flex flex-col p-4 
+          overflow-hidden
+          border-t
+         border-gray-200
          transition
-         hover:shadow-sm hover:-translate-y-0.5"
+         "
 >
   <!-- 封面 -->
       {% if post.cover_image %}
       <div
-        class=" w-full
+        class="m-1 w-full
                md:w-60 md:flex-shrink-0
                aspect-[16/9]
                md:aspect-auto
@@ -52,10 +53,9 @@
 
     <!-- 标题 -->
     <h2
-      class="text-xl sm:text-xl
-             font-semibold
-             leading-snug
-             text-gray-900
+      class="text-2xl sm:text-2xl
+          
+             text-gray-800
              line-clamp-2"
     >
       {{ post.title }}
@@ -64,7 +64,7 @@
     <!-- 描述 -->
     {% if post.description %}
     <p
-      class="text-sm
+      class="text-xl
              text-gray-600
              leading-relaxed
              line-clamp-3"
@@ -77,13 +77,11 @@
     <a
       href="/article/{{ post.id }}"
       class="mt-auto inline-flex items-center gap-1
-             text-sm font-medium
+             text-lg font-medium
              text-gray-700
              w-fit
-             px-4 py-2
-             rounded-full
-             border border-gray-200
-             hover:bg-gray-100 hover:text-gray-900
+             py-2
+              hover:text-gray-900
              transition"
     >
       阅读全文

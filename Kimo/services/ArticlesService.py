@@ -108,7 +108,6 @@ def send_article(title, content, category_name, description, cover_image,id):
     else:
         category_id = None
 
-    print(id)
     if not id:
         # 5. 创建文章
         article_result = articles.create_article(
