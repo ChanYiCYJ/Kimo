@@ -62,6 +62,7 @@ pip install -r requirements.txt
     "config": {
       "title": "Hello World",
       "introduction": "Hello World",
+      "footer": "Designed by Chan. Powered by Kimo.",
       "theme": "Default"
     }
   },

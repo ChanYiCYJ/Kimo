@@ -182,7 +182,7 @@
             {% else %}
               href="{{ page.content }}"
             {% endif %}
-            class="group flex items-center py-2 border-b border-gray-200 bg-white transition hover:-translate-y-0.5 hover:border-gray-300"
+            class="group flex items-center py-2 border-b border-gray-200 bg-white transitionc hover:border-gray-300"
           >
             <h3 class="ml-2 text-base font-medium text-gray-800 truncate">
               {{ page.name }}
@@ -197,6 +197,9 @@
 
     <!-- Footer -->
     <div class="bg-white/80 backdrop-blur p-4 text-sm text-gray-400 space-y-1">
+      <p class="ml-2">
+        {{ config.footer }}
+      </p>
       <p class="ml-2">
         Powered by
         <a href="https://github.com/ChanYiCYJ/Kimo"

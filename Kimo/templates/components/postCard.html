@@ -6,27 +6,8 @@
          transition
          "
 >
-  <!-- 封面 -->
-      {% if post.cover_image %}
-      <div
-        class="m-1 w-full
-               md:w-60 md:flex-shrink-0
-               aspect-[16/9]
-               md:aspect-auto
-               md:h-45
-               rounded-2xl overflow-hidden
-               bg-gray-100
-               transition-transform duration-300"
-      >
-        <img
-          src="{{ post.cover_image }}"
-          alt="{{ post.title }}"
-          class="w-full h-full object-cover
-                 transition-transform duration-300
-                 md:group-hover:scale-105"
-        />
-      </div>
-      {% endif %}
+    <!-- 封面 -->
+  
 
 
   <!-- 内容区 -->
@@ -36,20 +17,7 @@
            h-full"
   >
 
-    <!-- 分类 -->
-    {% if post.category_name %}
-    <span
-      class="w-fit inline-flex items-center
-             px-2 py-1
-             text-xs font-semibold uppercase tracking-wider
-             text-primary
-             bg-primary/10
-             rounded-full
-             border border-primary/20"
-    >
-      {{ post.category_name }}
-    </span>
-    {% endif %}
+    
 
     <!-- 标题 -->
     <h2
@@ -72,7 +40,7 @@
       {{ post.description }}
     </p>
     {% endif %}
-
+    
     <!-- 操作 -->
     <a
       href="/article/{{ post.id }}"
@@ -80,7 +48,9 @@
              text-lg font-medium
              text-gray-700
              w-fit
+             border-b border-gray-300
              py-2
+              hover:-translate-y-0.5
               hover:text-gray-900
              transition"
     >
