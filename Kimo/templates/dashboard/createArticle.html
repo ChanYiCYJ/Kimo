@@ -15,62 +15,7 @@
     />
     <link rel="stylesheet" href="/static/css/vditor.css" />
     <link rel="stylesheet" href="/static/css/loading.css" />
-    <style>
-      /* 控制侧栏收起/展开的过渡与样式 */
-      .layout-wrap {
-        transition: all 200ms ease;
-      }
-      /* 当 body 上有 .sidebar-collapsed 时调整布局 */
-      .sidebar-collapsed .right-sidebar {
-        transform: translateX(100%);
-        opacity: 0;
-        pointer-events: none;
-      }
-
-      .sidebar-collapsed .main-area {
-        grid-column: 1 / -1; /* 占满整行 */
-      }
-
-      /* 小的展开按钮（在侧栏收起后显示） */
-      #openSidebarTab {
-        transition:
-          opacity 0.15s ease,
-          transform 0.15s ease;
-      }
-      .sidebar-collapsed #openSidebarTab {
-        opacity: 1;
-        pointer-events: auto;
-        transform: translateX(0);
-      }
-      #openSidebarTab {
-        opacity: 0;
-        pointer-events: none;
-        transform: translateX(10px);
-      }
-
-      /* 侧边栏滑入动画 (desktop) */
-      .right-sidebar {
-        transition:
-          transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
-          opacity 200ms ease;
-      }
-
-      /* 小屏幕下侧边栏为折叠下拉样式（保持原有组件结构不变） */
-      @media (max-width: 1024px) {
-        .right-sidebar {
-          transform: translateY(0) !important;
-          opacity: 1 !important;
-          pointer-events: auto !important;
-        }
-        .sidebar-collapsed .main-area {
-          grid-column: 1 / -1;
-        }
-        /* 隐藏 open tab 在小屏幕 */
-        #openSidebarTab {
-          display: none;
-        }
-      }
-    </style>
+    <link rel="stylesheet" href="/static/css/site.css" />
   </head>
   <body class="bg-gray-50 text-gray-800 antialiased">
     <!-- 顶部 header（保留你原有 header 的结构与组件 id/class） -->
@@ -81,14 +26,6 @@
         <div class="flex h-16 items-center justify-between">
           <!-- 左侧：标题输入 -->
           <div class="flex-1 flex items-center">
-            {% if post %}
-            <a
-              href="/dashboard?type=manageArticle"
-              class="mr-5 px-3 py-2 text-sm bg-white border-b border-gray-200 hover:bg-gray-100 active:scale-[0.98] transition"
-            >
-              返回
-            </a>
-            {% endif %}
             <input
               id="titleInput"
               placeholder="文章标题"
@@ -382,44 +319,43 @@
     {% endif %}
 
     <script>
-      const vditor = new Vditor('vditor', {
-          height: 420,
-          placeholder: '在这里输入 Markdown 内容...',
-           upload: {
-          url: '/upload/image/vditor',   // ⭐ 上传接口
-          fieldName: 'file',          // ⭐ 后端接收的字段名
-          max: 5 * 1024 * 1024,        // 5MB
-          accept: 'image/*',
-           },
-           toolbar: [
-          'bold',
-          'italic',
-          'strike',
-          'headings',
-          'quote',
-          'code',
-          'inline-code',
-          'list',
-          'ordered-list',
-          'link',
-          'upload',
-          'preview',
-          'fullscreen'
+      const vditor = new Vditor("vditor", {
+        height: 420,
+        placeholder: "在这里输入 Markdown 内容...",
+        upload: {
+          url: "/upload/image/vditor", // ⭐ 上传接口
+          fieldName: "file", // ⭐ 后端接收的字段名
+          max: 5 * 1024 * 1024, // 5MB
+          accept: "image/*",
+        },
+        toolbar: [
+          "bold",
+          "italic",
+          "strike",
+          "headings",
+          "quote",
+          "code",
+          "inline-code",
+          "list",
+          "ordered-list",
+          "link",
+          "upload",
+          "preview",
+          "fullscreen",
         ],
-          toolbarConfig: { pin: true },
-           cache: {
-        enable: false,
-         },
+        toolbarConfig: { pin: true },
+        cache: {
+          enable: false,
+        },
         after() {
-        {% if post %}
-        if (POST_DATA){
-          console.log(POST_DATA);
-          vditor.setValue(POST_DATA.content || '');
-
-        }
-        {% endif %}
-      },
-        });
+          {% if post %}
+          if (typeof POST_DATA !== "undefined" && POST_DATA) {
+            vditor.setValue(POST_DATA.content || "");
+            document.getElementById("titleInput").value = POST_DATA.title || "";
+          }
+          {% endif %}
+        },
+      });
     </script>
 
     <script src="/static/js/createArticle.js"></script>

@@ -1,0 +1,91 @@
+/* 全局仪表盘样式：聚合原有内联样式，保证风格统一 */
+:root {
+  --site-radius: 12px; /* 对应 rounded-2xl */
+}
+/* 布局切换 */
+.layout-wrap {
+  transition: all 200ms ease;
+}
+.sidebar-collapsed .right-sidebar {
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+.sidebar-collapsed .main-area {
+  grid-column: 1 / -1;
+}
+/* 侧边栏展开 tab */
+#openSidebarTab {
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(10px);
+}
+.sidebar-collapsed #openSidebarTab {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+/* 侧边栏滑入动画 */
+.right-sidebar {
+  transition:
+    transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 200ms ease;
+}
+/* 小屏幕下侧边栏为折叠下拉样式 */
+@media (max-width: 1024px) {
+  .right-sidebar {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  .sidebar-collapsed .main-area {
+    grid-column: 1 / -1;
+  }
+  #openSidebarTab {
+    display: none !important;
+  }
+}
+/* Modal 层级与样式微调（与 Tailwind 互补） */
+#modal {
+  z-index: 10050;
+}
+/* 统一圆角变量（可按需扩展） */
+.rounded-site {
+  border-radius: var(--site-radius);
+}
+
+/* 兼容旧 loading.fade-out 逻辑（保留） */
+@keyframes loadingFadeOut {
+  to {
+    opacity: 0;
+  }
+}
+#global-loading.fade-out {
+  animation: loadingFadeOut 0.6s ease forwards;
+  pointer-events: none;
+}
+
+/* Blur-up 轻量版 */
+.blur-up {
+  filter: blur(10px);
+  transform: scale(1.03);
+  transition:
+    filter 0.8s ease,
+    transform 0.8s ease;
+  will-change: filter, transform;
+}
+.blur-up.loaded {
+  filter: blur(0);
+  transform: scale(1);
+}
+
+/* 移动端性能优化 */
+@media (max-width: 768px) {
+  .no-mobile-blur {
+    backdrop-filter: none !important;
+    background-color: rgba(255, 255, 255, 0.85);
+  }
+}
